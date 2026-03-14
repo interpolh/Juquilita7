@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Colonia Juquilita Sección 7 - Cooperaciones y Meta</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+    background: #f9f9f9;
+  }
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    margin-top: 20px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: right;
+  }
+  th {
+    background: #34495e;
+    color: white;
+    text-align: center;
+  }
+  td.nombre {
+    text-align: left;
+  }
+  tbody tr:nth-child(even) {
+    background: #f2f2f2;
+  }
+  tfoot td {
+    font-weight: bold;
+    background: #ddd;
+    text-align: right;
+  }
+  tfoot td.nombre {
+    text-align: left;
+  }
+  .total-caja {
+    margin-top: 20px;
+    font-size: 1.4em;
+    font-weight: bold;
+    text-align: right;
+    color: #27ae60;
+  }
+  #grafica-container {
+    width: 500px;
+    margin: 40px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+</style>
+</head>
+<body>
+
+<h1>Colonia Juquilita Sección 7</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>Nombre</th>
+      <th>Cooperación de $10.00</th>
+      <th>Cooperación luz efectivo</th>
+      <th>Cooperación luz depósito</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td class="nombre">Samuel Torres Hernandez</td><td>$10.00</td><td>$3,000.00</td><td></td></tr>
+    <tr><td>2</td><td class="nombre">Javier David Figueroa R</td><td>$10.00</td><td>$300.00</td><td></td></tr>
+    <tr><td>3</td><td class="nombre">Clara Caslos Varillas</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>4</td><td class="nombre">Yolanda Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>5</td><td class="nombre">Sandra Santiago Lopez</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>6</td><td class="nombre">Rosalba Mendoza Escamilla</td><td>$20.00</td><td></td><td>$5,000.00</td></tr>
+    <tr><td>7</td><td class="nombre">Lucio Andrade Sanches</td><td>$20.00</td><td>$1,000.00</td><td></td></tr>
+    <tr><td>8</td><td class="nombre">Benito Gonzalez Flores</td><td>$20.00</td><td></td><td></td></tr>
+    <tr><td>9</td><td class="nombre">Griselde Panzo Acahua</td><td>$10.00</td><td>$1,000.00</td><td>$1,000.00</td></tr>
+    <tr><td>10</td><td class="nombre">Angela Arellano Ginez</td><td>$20.00</td><td>$1,000.00</td><td></td></tr>
+    <tr><td>11</td><td class="nombre">Eloisa Sanchez Sandoval</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>12</td><td class="nombre">Faustino Varillas</td><td></td><td></td><td></td></tr>
+    <tr><td>13</td><td class="nombre">Ma. Margarita Varilla Coello</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>14</td><td class="nombre">Nicolas Genaro Varillas Regino</td><td>$10.00</td><td></td><td>$15,000.00</td></tr>
+    <tr><td>15</td><td class="nombre">Pablo Omar Lopez Huerta</td><td></td><td></td><td>$3,600.00</td></tr>
+    <tr><td>16</td><td class="nombre">Fabiola Martinez Santos</td><td>$20.00</td><td>$2,000.00</td><td></td></tr>
+    <tr><td>17</td><td class="nombre">Viviana Garcia Arellano</td><td></td><td>$500.00</td><td></td></tr>
+    <tr><td>18</td><td class="nombre">Araceli García Arellano</td><td></td><td></td><td></td></tr>
+    <tr><td>19</td><td class="nombre">Miguel García</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>20</td><td class="nombre">Francisco Romero</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>21</td><td class="nombre">Anaez romero</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>22</td><td class="nombre">Wenceslao Rojas Cano</td><td>$10.00</td><td></td><td>$3,600.00</td></tr>
+    <tr><td>23</td><td class="nombre">Gloria Janet Ambrocio R</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>24</td><td class="nombre">Ricardo Carlos Barillas</td><td></td><td></td><td></td></tr>
+    <tr><td>25</td><td class="nombre">Socorro Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
+    <tr><td>26</td><td class="nombre">Maria Elena Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2" class="nombre">Total para gastos en papelería</td>
+      <td>$260.00</td>
+      <td>$8,800.00</td>
+      <td>$28,200.00</td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="total-caja">Total en caja proyecto: $37,000.00</div>
+
+<div id="grafica-container">
+  <canvas id="graficaMeta"></canvas>
+</div>
+
+<script>
+const ctx = document.getElementById('graficaMeta').getContext('2d');
+
+const meta = 661154.46;
+const actual = 37000.00;
+
+const graficaMeta = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Meta total', 'Total en caja'],
+    datasets: [{
+      label: 'Cantidad en pesos',
+      data: [meta, actual],
+      backgroundColor: ['#3498db', '#27ae60'],
+      borderRadius: 5,
+      maxBarThickness: 80,
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return '$' + value.toLocaleString();
+          }
+        }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return '$' + context.parsed.y.toLocaleString();
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
