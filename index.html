@@ -1,174 +1,112 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Colonia Juquilita Sección 7 - Cooperaciones y Meta</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>Cooperaciones</title>
+
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f9f9f9;
-  }
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    margin-top: 20px;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: right;
-  }
-  th {
-    background: #34495e;
-    color: white;
-    text-align: center;
-  }
-  td.nombre {
-    text-align: left;
-  }
-  tbody tr:nth-child(even) {
-    background: #f2f2f2;
-  }
-  tfoot td {
-    font-weight: bold;
-    background: #ddd;
-    text-align: right;
-  }
-  tfoot td.nombre {
-    text-align: left;
-  }
-  .total-caja {
-    margin-top: 20px;
-    font-size: 1.4em;
-    font-weight: bold;
-    text-align: right;
-    color: #27ae60;
-  }
-  #grafica-container {
-    width: 500px;
-    margin: 40px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
+body {
+  font-family: Arial;
+  margin: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+}
 </style>
+
 </head>
 <body>
 
-<h1>Colonia Juquilita Sección 7</h1>
+<h2>Registro de Cooperaciones</h2>
 
+<!-- FORMULARIO -->
+<form id="formulario">
+  Nombre: <input type="text" id="nombre" required><br><br>
+  Cooperación: <input type="number" id="cooperacion"><br><br>
+  Efectivo: <input type="number" id="efectivo"><br><br>
+  Depósito: <input type="number" id="deposito"><br><br>
+
+  <button type="submit">Guardar</button>
+</form>
+
+<!-- TABLA -->
 <table>
   <thead>
     <tr>
       <th>No.</th>
       <th>Nombre</th>
-      <th>Cooperación de $10.00</th>
-      <th>Cooperación luz efectivo</th>
-      <th>Cooperación luz depósito</th>
+      <th>Cooperación</th>
+      <th>Efectivo</th>
+      <th>Depósito</th>
     </tr>
   </thead>
-  <tbody>
-    <tr><td>1</td><td class="nombre">Samuel Torres Hernandez</td><td>$10.00</td><td>$5,000.00</td><td></td></tr>
-    <tr><td>2</td><td class="nombre">Javier David Figueroa R</td><td>$10.00</td><td>$300.00</td><td></td></tr>
-    <tr><td>3</td><td class="nombre">Clara Caslos Varillas</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>4</td><td class="nombre">Yolanda Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>5</td><td class="nombre">Sandra Santiago Lopez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>6</td><td class="nombre">Rosalba Mendoza Escamilla</td><td>$40.00</td><td>$1,000.00</td><td>$5,000.00</td></tr>
-    <tr><td>7</td><td class="nombre">Lucio Andrade Sanches</td><td>$20.00</td><td>$1,500.00</td><td></td></tr>
-    <tr><td>8</td><td class="nombre">Benito Gonzalez Flores</td><td>$30.00</td><td>$10,000.00</td><td></td></tr>
-    <tr><td>9</td><td class="nombre">Griselde Panzo Acahua</td><td>$60.00</td><td>$3,000.00</td><td>$2,000.00</td></tr>
-    <tr><td>10</td><td class="nombre">Angela Arellano Ginez</td><td>$20.00</td><td>$2,000.00</td><td></td></tr>
-    <tr><td>11</td><td class="nombre">Eloisa Sanchez Sandoval</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>12</td><td class="nombre">Faustino Varillas</td><td></td><td></td><td></td></tr>
-    <tr><td>13</td><td class="nombre">Ma. Margarita Varilla Coello</td><td>$10.00</td><td></td><td>$1,000.00</td></tr>
-    <tr><td>14</td><td class="nombre">Nicolas Genaro Varillas Regino</td><td>$10.00</td><td></td><td>$15,000.00</td></tr>
-    <tr><td>15</td><td class="nombre">Pablo Omar Lopez Huerta</td><td>$50.00</td><td>$1,400.00</td><td>$3,600.00</td></tr>
-    <tr><td>16</td><td class="nombre">Fabiola Martinez Santos</td><td>$20.00</td><td>$2,000.00</td><td></td></tr>
-    <tr><td>17</td><td class="nombre">Viviana Garcia Arellano</td><td></td><td>$500.00</td><td></td></tr>
-    <tr><td>18</td><td class="nombre">Araceli García Arellano</td><td></td><td></td><td></td></tr>
-    <tr><td>19</td><td class="nombre">Miguel García</td><td>$10.00</td><td>$4,000.00</td><td></td></tr>
-    <tr><td>20</td><td class="nombre">Francisco Romero</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>21</td><td class="nombre">Anaez romero</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>22</td><td class="nombre">Wenceslao Rojas Cano</td><td>$20.00</td><td></td><td>$3,600.00</td></tr>
-    <tr><td>23</td><td class="nombre">Gloria Janet Ambrosio R</td><td>$10.00</td><td></td><td>$1,500.00</td></tr>
-    <tr><td>24</td><td class="nombre">Ricardo Carlos Barillas</td><td></td><td></td><td></td></tr>
-    <tr><td>25</td><td class="nombre">Socorro Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>26</td><td class="nombre">Maria Elena Varillas Fernandez</td><td>$20.00</td><td></td><td></td></tr>
-    <tr><td>27</td><td class="nombre">Miguel Ángel Romero</td><td>20</td><td></td><td>$1,000.00</td></tr>
-    <tr><td>28</td><td class="nombre">Francisco Romero</td><td>20</td><td></td><td>$1,000.00</td></tr>
-<tr><td>29</td><td class="nombre">Juan Bello Huerta</td><td></td><td></td><td>$3,500.00</td></tr>
-<tr><td>30</td><td class="nombre">Gilberto Rodríguez Paredes</td><td></td><td>$600.00</td><td>$3,000.00</td></tr>
-<tr><td>31</td><td class="nombre">Reina Rosas Fuentes</td><td>$20.00</td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Jorge Rosas Fuentes</td><td>$20.00</td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Jesús López Huerta </td><td></td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Hugo López Huerta </td><td></td><td></td><td></td></tr>
-
-
-
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="2" class="nombre">Total para gastos en papelería</td>
-      <td>$480.00</td>
-      <td>$31,300.00</td>
-      <td>$40,200.00</td>
-    </tr>
-  </tfoot>
+  <tbody id="tablaDatos"></tbody>
 </table>
 
-<div class="total-caja">Total en caja proyecto: $71,500.00</div>
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-<div id="grafica-container">
-  <canvas id="graficaMeta"></canvas>
-</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
+  authDomain: "cooperaciones-juquilita.firebaseapp.com",
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:ec9bcf6d87caa1ae2bf9a2"
+};
 
-<script>
-const ctx = document.getElementById('graficaMeta').getContext('2d');
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const meta = 661154.46;
-const actual = 71500.00;
+// GUARDAR
+document.getElementById("formulario").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-const graficaMeta = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Meta total', 'Total en caja'],
-    datasets: [{
-      label: 'Cantidad en pesos',
-      data: [meta, actual],
-      backgroundColor: ['#3498db', '#27ae60'],
-      borderRadius: 5,
-      maxBarThickness: 80,
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: function(value) {
-            return '$' + value.toLocaleString();
-          }
-        }
-      }
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            return '$' + context.parsed.y.toLocaleString();
-          }
-        }
-      }
-    }
-  }
+  await addDoc(collection(db, "cooperaciones"), {
+    nombre: document.getElementById("nombre").value,
+    cooperacion: parseFloat(document.getElementById("cooperacion").value) || 0,
+    efectivo: parseFloat(document.getElementById("efectivo").value) || 0,
+    deposito: parseFloat(document.getElementById("deposito").value) || 0
+  });
+
+  document.getElementById("formulario").reset();
+});
+
+// MOSTRAR
+const tabla = document.getElementById("tablaDatos");
+
+onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+  tabla.innerHTML = "";
+  let i = 1;
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+
+    tabla.innerHTML += `
+      <tr>
+        <td>${i++}</td>
+        <td>${d.nombre}</td>
+        <td>$${d.cooperacion}</td>
+        <td>$${d.efectivo}</td>
+        <td>$${d.deposito}</td>
+      </tr>
+    `;
+  });
 });
 </script>
 
