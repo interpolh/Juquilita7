@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cooperaciones</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+}
+</style>
+
+</head>
+<body>
+
+<h2>Registro de Cooperaciones</h2>
+
+<!-- FORMULARIO -->
+<form id="formulario">
+  Nombre: <input type="text" id="nombre" required><br><br>
+  Cooperación: <input type="number" id="cooperacion"><br><br>
+  Efectivo: <input type="number" id="efectivo"><br><br>
+  Depósito: <input type="number" id="deposito"><br><br>
+
+  <button type="submit">Guardar</button>
+</form>
+
+<!-- TABLA -->
+<table>
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>Nombre</th>
+      <th>Cooperación</th>
+      <th>Efectivo</th>
+      <th>Depósito</th>
+    </tr>
+  </thead>
+  <tbody id="tablaDatos"></tbody>
+</table>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
+  authDomain: "cooperaciones-juquilita.firebaseapp.com",
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:ec9bcf6d87caa1ae2bf9a2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// GUARDAR
+document.getElementById("formulario").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  await addDoc(collection(db, "cooperaciones"), {
+    nombre: document.getElementById("nombre").value,
+    cooperacion: parseFloat(document.getElementById("cooperacion").value) || 0,
+    efectivo: parseFloat(document.getElementById("efectivo").value) || 0,
+    deposito: parseFloat(document.getElementById("deposito").value) || 0
+  });
+
+  document.getElementById("formulario").reset();
+});
+
+// MOSTRAR
+const tabla = document.getElementById("tablaDatos");
+
+onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+  tabla.innerHTML = "";
+  let i = 1;
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+
+    tabla.innerHTML += `
+      <tr>
+        <td>${i++}</td>
+        <td>${d.nombre}</td>
+        <td>$${d.cooperacion}</td>
+        <td>$${d.efectivo}</td>
+        <td>$${d.deposito}</td>
+      </tr>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>
