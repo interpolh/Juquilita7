@@ -2,112 +2,269 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cooperaciones</title>
+<title>ADMIN - Cooperaciones</title>
 
 <style>
 body {
   font-family: Arial;
-  margin: 20px;
+  background: #eef2f7;
+  padding: 20px;
 }
+
+h2 {
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 95%;
+}
+
+button {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.guardar { background: #27ae60; color: white; }
+.cancelar { background: #e74c3c; color: white; }
+.editar { background: #3498db; color: white; }
+.eliminar { background: #c0392b; color: white; }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-}
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  background: white;
 }
 
 th {
   background: #2c3e50;
   color: white;
 }
-</style>
 
+td, th {
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Registro de Cooperaciones</h2>
+<!-- LOGIN -->
+<div id="login" class="card">
+  <h3>🔐 Acceso Administrador</h3>
+  <input type="password" id="clave" placeholder="Ingresa la clave">
+  <button onclick="verificarClave()">Entrar</button>
+</div>
 
-<!-- FORMULARIO -->
+<!-- CONTENIDO -->
+<div id="contenido" style="display:none;">
+
+<h2>Panel Administrador</h2>
+
+<div class="card">
 <form id="formulario">
-  Nombre: <input type="text" id="nombre" required><br><br>
-  Cooperación: <input type="number" id="cooperacion"><br><br>
-  Efectivo: <input type="number" id="efectivo"><br><br>
-  Depósito: <input type="number" id="deposito"><br><br>
+  <input type="hidden" id="docId">
 
-  <button type="submit">Guardar</button>
+  <input type="text" id="nombre" placeholder="Nombre" required>
+  <input type="number" id="cooperacion" placeholder="Cooperación">
+  <input type="number" id="efectivo" placeholder="Efectivo">
+  <input type="number" id="deposito" placeholder="Depósito">
+
+  <button type="submit" class="guardar">Guardar</button>
+  <button type="button" onclick="cancelarEdicion()" class="cancelar">Cancelar</button>
 </form>
+</div>
 
-<!-- TABLA -->
+<div class="card">
+<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
+</div>
+
+<div class="card">
 <table>
-  <thead>
-    <tr>
-      <th>No.</th>
-      <th>Nombre</th>
-      <th>Cooperación</th>
-      <th>Efectivo</th>
-      <th>Depósito</th>
-    </tr>
-  </thead>
-  <tbody id="tablaDatos"></tbody>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Coop</th>
+<th>Efectivo</th>
+<th>Depósito</th>
+<th>Total</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
 </table>
+</div>
 
-<!-- FIREBASE -->
+<div class="card">
+<h3 id="totales"></h3>
+</div>
+
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
+  apiKey: "TU_API_KEY",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita",
-  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
-  messagingSenderId: "836131757319",
-  appId: "1:836131757319:web:ec9bcf6d87caa1ae2bf9a2"
+  projectId: "cooperaciones-juquilita"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// GUARDAR
+const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+
+const tabla = document.getElementById("tabla");
+
+let datosGlobales = [];
+
+// LOGIN
+window.verificarClave = () => {
+  const clave = document.getElementById("clave").value;
+  const CLAVE_CORRECTA = "POLH"; // 🔥 CAMBIA ESTO
+
+  if (clave === CLAVE_CORRECTA) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("contenido").style.display = "block";
+  } else {
+    alert("Clave incorrecta");
+  }
+};
+
+// GUARDAR / EDITAR
 document.getElementById("formulario").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  await addDoc(collection(db, "cooperaciones"), {
-    nombre: document.getElementById("nombre").value,
-    cooperacion: parseFloat(document.getElementById("cooperacion").value) || 0,
-    efectivo: parseFloat(document.getElementById("efectivo").value) || 0,
-    deposito: parseFloat(document.getElementById("deposito").value) || 0
-  });
+  const id = document.getElementById("docId").value;
+  const nombre = document.getElementById("nombre").value.trim();
 
-  document.getElementById("formulario").reset();
+  if (!nombre) return alert("El nombre es obligatorio");
+
+  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty && !id) {
+    return alert("Ese nombre ya existe");
+  }
+
+  const datos = {
+    nombre,
+    cooperacion: Number(document.getElementById("cooperacion").value) || 0,
+    efectivo: Number(document.getElementById("efectivo").value) || 0,
+    deposito: Number(document.getElementById("deposito").value) || 0
+  };
+
+  if (id) {
+    await updateDoc(doc(db, "cooperaciones", id), datos);
+    alert("Actualizado");
+  } else {
+    await addDoc(collection(db, "cooperaciones"), datos);
+    alert("Guardado");
+  }
+
+  cancelarEdicion();
 });
 
+// CANCELAR
+window.cancelarEdicion = () => {
+  document.getElementById("formulario").reset();
+  document.getElementById("docId").value = "";
+};
+
 // MOSTRAR
-const tabla = document.getElementById("tablaDatos");
-
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
-  tabla.innerHTML = "";
-  let i = 1;
+  datosGlobales = [];
 
-  snapshot.forEach(doc => {
-    const d = doc.data();
+  snapshot.forEach(docSnap => {
+    datosGlobales.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
+  });
+
+  renderTabla(datosGlobales);
+});
+
+// RENDER TABLA
+function renderTabla(lista) {
+  tabla.innerHTML = "";
+
+  let totalC = 0, totalE = 0, totalD = 0;
+
+  lista.forEach(d => {
+    const total = (d.cooperacion || 0) + (d.efectivo || 0) + (d.deposito || 0);
 
     tabla.innerHTML += `
       <tr>
-        <td>${i++}</td>
         <td>${d.nombre}</td>
-        <td>$${d.cooperacion}</td>
-        <td>$${d.efectivo}</td>
-        <td>$${d.deposito}</td>
+        <td>${formato(d.cooperacion)}</td>
+        <td>${formato(d.efectivo)}</td>
+        <td>${formato(d.deposito)}</td>
+        <td><strong>${formato(total)}</strong></td>
+        <td>
+          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito})">Editar</button>
+          <button class="eliminar" onclick="eliminar('${d.id}')">Eliminar</button>
+        </td>
       </tr>
     `;
+
+    totalC += d.cooperacion || 0;
+    totalE += d.efectivo || 0;
+    totalD += d.deposito || 0;
   });
+
+  document.getElementById("totales").innerHTML = `
+    Total Cooperación: ${formato(totalC)} <br>
+    Total Efectivo: ${formato(totalE)} <br>
+    Total Depósito: ${formato(totalD)} <br>
+    <strong>Total General: ${formato(totalC + totalE + totalD)}</strong>
+  `;
+}
+
+// BUSCADOR
+document.getElementById("buscador").addEventListener("keyup", (e) => {
+  const texto = e.target.value.toLowerCase();
+
+  const filtrados = datosGlobales.filter(d =>
+    d.nombre.toLowerCase().includes(texto)
+  );
+
+  renderTabla(filtrados);
 });
+
+// EDITAR
+window.editar = (id, nombre, coop, efec, dep) => {
+  document.getElementById("docId").value = id;
+  document.getElementById("nombre").value = nombre;
+  document.getElementById("cooperacion").value = coop;
+  document.getElementById("efectivo").value = efec;
+  document.getElementById("deposito").value = dep;
+};
+
+// ELIMINAR
+window.eliminar = async (id) => {
+  if (confirm("¿Eliminar registro?")) {
+    await deleteDoc(doc(db, "cooperaciones", id));
+  }
+};
 </script>
 
 </body>
