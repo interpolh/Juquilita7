@@ -1,175 +1,374 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Colonia Juquilita Sección 7 - Cooperaciones</title>
+<meta charset="UTF-8">
+<title>Dashboard Cooperaciones PRO</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 30px;
-    background: #f9f9f9;
-  }
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    margin-top: 20px;
-  }
-  th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: right;
-  }
-  th {
-    background: #34495e;
-    color: white;
-    text-align: center;
-  }
-  td.nombre {
-    text-align: left;
-  }
-  tbody tr:nth-child(even) {
-    background: #f2f2f2;
-  }
-  tfoot td {
-    font-weight: bold;
-    background: #ddd;
-    text-align: right;
-  }
-  tfoot td.nombre {
-    text-align: left;
-  }
-  .total-caja {
-    margin-top: 20px;
-    font-size: 1.4em;
-    font-weight: bold;
-    text-align: right;
-    color: #27ae60;
-  }
-  #grafica-container {
-    width: 500px;
-    margin: 40px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #eef2f7;
+  margin: 0;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+input {
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #3498db;
+  color: white;
+}
+
+button:hover {
+  background: #2980b9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #34495e;
+  color: white;
+}
+
+td, th {
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+.progreso {
+  background: #ddd;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.barra {
+  height: 25px;
+  background: green;
+  color: white;
+  text-align: center;
+  line-height: 25px;
+}
+
+
+tfoot {
+  background: #2c3e50;
+  color: white;
+  font-weight: bold;
+}
+
+#totalGeneral {
+  color: #00ffcc;
+  font-size: 16px;
+}
+
 </style>
-</head>
+
 <body>
 
-<h1>Colonia Juquilita Sección 7</h1>
+<header>Colonia Juquilita Sección 7</header>
 
-<table>
-  <thead>
-    <tr>
-      <th>No.</th>
-      <th>Nombre</th>
-      <th>Cooperación de $10.00</th>
-      <th>Cooperación luz efectivo</th>
-      <th>Cooperación luz depósito</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td class="nombre">Samuel Torres Hernandez</td><td>$10.00</td><td>$5,000.00</td><td></td></tr>
-    <tr><td>2</td><td class="nombre">Javier David Figueroa R</td><td>$10.00</td><td>$300.00</td><td></td></tr>
-    <tr><td>3</td><td class="nombre">Clara Caslos Varillas</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>4</td><td class="nombre">Yolanda Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>5</td><td class="nombre">Sandra Santiago Lopez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>6</td><td class="nombre">Rosalba Mendoza Escamilla</td><td>$40.00</td><td>$1,000.00</td><td>$5,000.00</td></tr>
-    <tr><td>7</td><td class="nombre">Lucio Andrade Sanches</td><td>$20.00</td><td>$1,500.00</td><td></td></tr>
-    <tr><td>8</td><td class="nombre">Benito Gonzalez Flores</td><td>$30.00</td><td>$10,000.00</td><td></td></tr>
-    <tr><td>9</td><td class="nombre">Griselde Panzo Acahua</td><td>$60.00</td><td>$3,000.00</td><td>$2,000.00</td></tr>
-    <tr><td>10</td><td class="nombre">Angela Arellano Ginez</td><td>$20.00</td><td>$2,000.00</td><td></td></tr>
-    <tr><td>11</td><td class="nombre">Eloisa Sanchez Sandoval</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>12</td><td class="nombre">Faustino Varillas</td><td></td><td></td><td></td></tr>
-    <tr><td>13</td><td class="nombre">Ma. Margarita Varilla Coello</td><td>$10.00</td><td></td><td>$1,000.00</td></tr>
-    <tr><td>14</td><td class="nombre">Nicolas Genaro Varillas Regino</td><td>$10.00</td><td></td><td>$15,000.00</td></tr>
-    <tr><td>15</td><td class="nombre">Pablo Omar Lopez Huerta</td><td>$50.00</td><td>$1,400.00</td><td>$3,600.00</td></tr>
-    <tr><td>16</td><td class="nombre">Fabiola Martinez Santos</td><td>$20.00</td><td>$2,000.00</td><td></td></tr>
-    <tr><td>17</td><td class="nombre">Viviana Garcia Arellano</td><td></td><td>$500.00</td><td></td></tr>
-    <tr><td>18</td><td class="nombre">Araceli García Arellano</td><td></td><td></td><td></td></tr>
-    <tr><td>19</td><td class="nombre">Miguel García</td><td>$10.00</td><td>$4,000.00</td><td></td></tr>
-    <tr><td>20</td><td class="nombre">Francisco Romero</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>21</td><td class="nombre">Anaez romero</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>22</td><td class="nombre">Wenceslao Rojas Cano</td><td>$20.00</td><td></td><td>$3,600.00</td></tr>
-    <tr><td>23</td><td class="nombre">Gloria Janet Ambrosio R</td><td>$10.00</td><td></td><td>$1,500.00</td></tr>
-    <tr><td>24</td><td class="nombre">Ricardo Carlos Barillas</td><td></td><td></td><td></td></tr>
-    <tr><td>25</td><td class="nombre">Socorro Varillas Fernandez</td><td>$10.00</td><td></td><td></td></tr>
-    <tr><td>26</td><td class="nombre">Maria Elena Varillas Fernandez</td><td>$20.00</td><td></td><td></td></tr>
-    <tr><td>27</td><td class="nombre">Miguel Ángel Romero</td><td>20</td><td></td><td>$1,000.00</td></tr>
-    <tr><td>28</td><td class="nombre">Francisco Romero</td><td>20</td><td></td><td>$1,000.00</td></tr>
-<tr><td>29</td><td class="nombre">Juan Bello Huerta</td><td></td><td></td><td>$3,500.00</td></tr>
-<tr><td>30</td><td class="nombre">Gilberto Rodríguez Paredes</td><td></td><td>$600.00</td><td>$3,000.00</td></tr>
-<tr><td>31</td><td class="nombre">Reina Rosas Fuentes</td><td>$20.00</td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Jorge Rosas Fuentes</td><td>$20.00</td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Jesús López Huerta </td><td></td><td></td><td></td></tr>
-<tr><td>32</td><td class="nombre">Hugo López Huerta </td><td></td><td></td><td></td></tr>
+<div class="container">
 
+<div class="card">
+<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
 
+<button onclick="exportarExcel()">📥 Excel</button>
+<button onclick="exportarPDF()">📄 PDF</button>
 
-  </tbody>
-  <tfoot>
-    <tr>
-      <td colspan="2" class="nombre">Total para gastos en papelería</td>
-      <td>$480.00</td>
-      <td>$31,300.00</td>
-      <td>$40,200.00</td>
-    </tr>
-  </tfoot>
+<table id="miTabla">
+<thead>
+<tr>
+<th>No.</th>
+<th>Nombre</th>
+<th>Cooperación</th>
+<th>Efectivo</th>
+<th>Depósito</th>
+<th>Total</th>
+</tr>
+</thead>
+
+<tbody id="tabla"></tbody>
+
+<tfoot>
+<tr id="filaTotales">
+<td></td>
+<td><strong>TOTALES</strong></td>
+<td id="totalC"></td>
+<td id="totalE"></td>
+<td id="totalD"></td>
+<td id="totalGeneral"></td>
+</tr>
+</tfoot>
+
 </table>
 
-<div class="total-caja">Total en caja proyecto: $71,500.00</div>
-
-<div id="grafica-container">
-  <canvas id="graficaMeta"></canvas>
 </div>
 
-<script>
-const ctx = document.getElementById('graficaMeta').getContext('2d');
+<div class="card">
+<h3 id="totales"></h3>
+</div>
 
+<div class="card">
+<h3>Progreso</h3>
+<div class="progreso">
+<div id="barraProgreso" class="barra">0%</div>
+</div>
+</div>
+
+<div class="card">
+<canvas id="grafica"></canvas>
+</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "cooperaciones-juquilita.firebaseapp.com",
+  projectId: "cooperaciones-juquilita"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const tabla = document.getElementById("tabla");
 const meta = 661154.46;
-const actual = 71500.00;
 
-const graficaMeta = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Meta total', 'Total en caja'],
-    datasets: [{
-      label: 'Cantidad en pesos',
-      data: [meta, actual],
-      backgroundColor: ['#3498db', '#27ae60'],
-      borderRadius: 5,
-      maxBarThickness: 80,
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: function(value) {
-            return '$' + value.toLocaleString();
-          }
-        }
-      }
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            return '$' + context.parsed.y.toLocaleString();
-          }
-        }
-      }
-    }
-  }
+let datosGlobales = [];
+let chart;
+
+const formato = (num) => num.toLocaleString('es-MX', {
+  style: 'currency',
+  currency: 'MXN'
 });
+
+onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+  datosGlobales = [];
+
+  snapshot.forEach(doc => {
+    datosGlobales.push(doc.data());
+
+  });
+  renderTabla(datosGlobales);
+});
+
+function renderTabla(datos) {
+  let filas = "";
+  let totalC = 0, totalE = 0, totalD = 0;
+  let contador = 1;
+
+  datos.forEach(d => {
+    const cooperacion = Number(d.cooperacion) || 0;
+    const efectivo = Number(d.efectivo) || 0;
+    const deposito = Number(d.deposito) || 0;
+    const totalPersona = efectivo + deposito;
+
+    filas += `
+      <tr>
+        <td>${contador++}</td>
+        <td>${d.nombre}</td>
+        <td>${formato(cooperacion)}</td>
+        <td>${formato(efectivo)}</td>
+        <td>${formato(deposito)}</td>
+        <td>${formato(totalPersona)}</td>
+      </tr>
+    `;
+
+    totalC += cooperacion;
+    totalE += efectivo;
+    totalD += deposito;
+  });
+
+  tabla.innerHTML = filas;
+
+document.getElementById("totalC").innerText = formato(totalC);
+document.getElementById("totalE").innerText = formato(totalE);
+document.getElementById("totalD").innerText = formato(totalD);
+document.getElementById("totalGeneral").innerText = formato(totalE + totalD);
+
+  const totalGeneral = totalE + totalD;
+  const faltante = meta - totalGeneral;
+  const porcentaje = ((totalGeneral / meta) * 100).toFixed(2);
+
+  document.getElementById("totales").innerHTML = `
+    Total Cooperación: ${formato(totalC)} <br>
+    Total Efectivo: ${formato(totalE)} <br>
+    Total Depósito: ${formato(totalD)} <br>
+    <strong>Total Reunido: ${formato(totalGeneral)}</strong><br>
+    Meta: ${formato(meta)}<br>
+    Faltante: ${formato(faltante)}
+  `;
+
+  // barra progreso
+  const barra = document.getElementById("barraProgreso");
+  barra.style.width = porcentaje + "%";
+  barra.innerHTML = porcentaje + "%";
+
+  // gráfica
+  const ctx = document.getElementById("grafica");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Reunido', 'Meta'],
+      datasets: [{
+        data: [totalGeneral, meta]
+      }]
+    }
+  });
+}
+
+// 🔍 BUSCADOR
+document.getElementById("buscador").addEventListener("keyup", e => {
+  const texto = e.target.value.toLowerCase();
+  const filtrados = datosGlobales.filter(d =>
+    d.nombre.toLowerCase().includes(texto)
+  );
+  renderTabla(filtrados);
+});
+
+// 📥 EXPORTAR EXCEL
+window.exportarExcel = function() {
+  const ws = XLSX.utils.table_to_sheet(document.getElementById("miTabla"));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Cooperaciones");
+  XLSX.writeFile(wb, "cooperaciones.xlsx");
+}
+
+window.exportarPDF = function() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // 📅 Fecha actual
+  const fecha = new Date().toLocaleDateString();
+
+  // 🧾 TÍTULO
+  doc.setFontSize(18);
+  doc.text("REPORTE DE COOPERACIONES", 105, 15, null, null, "center");
+
+  // 📅 FECHA
+  doc.setFontSize(10);
+  doc.text("Fecha: " + fecha, 14, 25);
+
+  // 📊 TABLA
+  doc.autoTable({
+    html: '#miTabla',
+    startY: 30,
+    theme: 'grid',
+    headStyles: { fillColor: [44, 62, 80] },
+    styles: { fontSize: 8 }
+  });
+
+  // 🔢 OBTENER TOTALES DESDE LA TABLA
+  let totalC = 0, totalE = 0, totalD = 0;
+
+  document.querySelectorAll("#tabla tr").forEach(tr => {
+    const tds = tr.querySelectorAll("td");
+
+    if (tds.length >= 5) {
+      const cooperacion = parseFloat(tds[2].innerText.replace(/[^0-9.-]+/g,"")) || 0;
+      const efectivo = parseFloat(tds[3].innerText.replace(/[^0-9.-]+/g,"")) || 0;
+      const deposito = parseFloat(tds[4].innerText.replace(/[^0-9.-]+/g,"")) || 0;
+
+      totalC += cooperacion;
+      totalE += efectivo;
+      totalD += deposito;
+    }
+  });
+
+  const totalGeneral = totalE + totalD;
+  const meta = 661154.46;
+  const faltante = meta - totalGeneral;
+
+  let finalY = doc.lastAutoTable.finalY + 10;
+
+  // 💰 RESUMEN
+  doc.setFontSize(12);
+  doc.text("RESUMEN", 14, finalY);
+
+  doc.setFontSize(10);
+  finalY += 6;
+
+  doc.text(`Total Cooperación: $${totalC.toLocaleString()}`, 14, finalY);
+  finalY += 6;
+
+  doc.text(`Total Efectivo: $${totalE.toLocaleString()}`, 14, finalY);
+  finalY += 6;
+
+  doc.text(`Total Depósito: $${totalD.toLocaleString()}`, 14, finalY);
+  finalY += 6;
+
+  doc.text(`Total Reunido: $${totalGeneral.toLocaleString()}`, 14, finalY);
+  finalY += 6;
+
+  doc.text(`Meta: $${meta.toLocaleString()}`, 14, finalY);
+  finalY += 6;
+
+  doc.text(`Faltante: $${faltante.toLocaleString()}`, 14, finalY);
+
+  // ✍️ FIRMA (opcional)
+  finalY += 20;
+  doc.text("__________________________", 14, finalY);
+  doc.text("Firma", 14, finalY + 5);
+
+  // 💾 GUARDAR
+// 📊 AGREGAR GRÁFICA AL PDF
+const canvas = document.getElementById("grafica");
+const imgData = canvas.toDataURL("image/png");
+
+doc.addPage();
+doc.setFontSize(14);
+doc.text("Gráfica de Avance", 14, 15);
+doc.addImage(imgData, "PNG", 15, 25, 180, 100);
+  doc.save("reporte_cooperaciones.pdf");
+}
+
 </script>
 
 </body>
