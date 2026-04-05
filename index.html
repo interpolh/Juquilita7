@@ -49,6 +49,10 @@ h1 {
   <a href="dashboard.html" class="boton">📊 Ver Dashboard</a>
   <a href="index2.html" class="boton">📄 Reportes</a>
 </div>
-
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
 </body>
 </html>
