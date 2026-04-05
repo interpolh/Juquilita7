@@ -115,9 +115,9 @@ button {
 
 <div class="card">
 <button onclick="filtrar('todos')">Todos</button>
-<button onclick="filtrar('pagados')">🟢 Pagados</button>
-<button onclick="filtrar('pendientes')">🔴 Pendientes</button>
-</div>
+<button onclick="filtrar('pagados')">🟢 Al corriente</button>
+<button onclick="filtrar('parciales')">🟡 Parciales</button>
+<button onclick="filtrar('pendientes')">🔴 Pendientes</button></div>
 
 <div class="card">
 <input type="text" id="buscador" placeholder="🔍 Buscar...">
@@ -168,8 +168,8 @@ const meta = 661154.46;
 let datosGlobales = [];
 let chart;
 
-window.filtrar = function(tipo) {
 
+window.filtrar = function(tipo) {
   let filtrados = [];
 
   if (tipo === "todos") {
@@ -177,16 +177,29 @@ window.filtrar = function(tipo) {
   }
 
   if (tipo === "pagados") {
+    // Total mayor o igual a la cooperacion
     filtrados = datosGlobales.filter(d =>
-      (d.efectivo + d.deposito) >= d.cooperacion
+      (d.efectivo + d.deposito) >= d.cooperacion && d.cooperacion > 0
+    );
+  }
+
+  if (tipo === "parciales") {
+    // Total mayor a 0 pero menor que la cooperacion
+    filtrados = datosGlobales.filter(d =>
+      (d.efectivo + d.deposito) > 0 &&
+      (d.efectivo + d.deposito) < d.cooperacion
     );
   }
 
   if (tipo === "pendientes") {
+    // Total = 0
     filtrados = datosGlobales.filter(d =>
       (d.efectivo + d.deposito) === 0
     );
   }
+
+  render(filtrados);
+}
 
   render(filtrados);
 }
@@ -220,7 +233,7 @@ function render(datos) {
     let color = "";
 
     if (total >= coop && coop > 0) {
-      estado = "🟢 Pagado";
+      estado = "🟢 Al corriente";
       color = "#2ecc71";
     } else if (total > 0) {
       estado = "🟡 Parcial";
