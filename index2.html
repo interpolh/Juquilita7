@@ -2,8 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <title>ADMIN - Cooperaciones</title>
+
+<link rel="manifest" href="manifest.json">
 
 <style>
 body {
@@ -12,9 +16,7 @@ body {
   padding: 20px;
 }
 
-h2 {
-  text-align: center;
-}
+h2 { text-align: center; }
 
 .card {
   background: white;
@@ -62,23 +64,24 @@ tr:nth-child(even) {
   background: #f2f2f2;
 }
 </style>
-
-<link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- 🔐 LOGIN -->
 <div id="login" class="card">
   <h3>🔐 Acceso Administrador</h3>
-  <input type="password" id="clave" placeholder="Ingresa la clave">
-  <button onclick="verificarClave()">Entrar</button>
+  <input type="email" id="email" placeholder="Correo">
+  <input type="password" id="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
 </div>
 
-<!-- CONTENIDO -->
+<!-- 🔒 CONTENIDO -->
 <div id="contenido" style="display:none;">
 
 <h2>Panel Administrador</h2>
+
+<button onclick="logout()">Cerrar sesión</button>
 
 <div class="card">
 <form id="formulario">
@@ -121,36 +124,68 @@ tr:nth-child(even) {
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
+  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita"
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+
+// 👑 SOLO ESTE CORREO PUEDE ENTRAR
+const ADMIN_EMAIL = "interpolhtehuacan@gmail.com"; // 🔥 CAMBIA ESTO
+
+// 🔐 LOGIN
+window.login = function() {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .catch(() => alert("Datos incorrectos"));
+}
+
+// 👑 VALIDAR ADMIN
+onAuthStateChanged(auth, user => {
+
+  if (user && user.email === ADMIN_EMAIL) {
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("contenido").style.display = "block";
+
+  } else {
+
+    if (user) {
+      alert("No tienes acceso");
+      signOut(auth);
+    }
+
+    document.getElementById("login").style.display = "block";
+    document.getElementById("contenido").style.display = "none";
+  }
+
+});
+
+// 🚪 LOGOUT
+window.logout = function() {
+  signOut(auth);
+}
+
+// 📊 SISTEMA (TU CÓDIGO ORIGINAL)
 const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
 const tabla = document.getElementById("tabla");
-
 let datosGlobales = [];
-
-// LOGIN
-window.verificarClave = () => {
-  const clave = document.getElementById("clave").value;
-  const CLAVE_CORRECTA = "POLH"; // 🔥 CAMBIA ESTO
-
-  if (clave === CLAVE_CORRECTA) {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("contenido").style.display = "block";
-  } else {
-    alert("Clave incorrecta");
-  }
-};
 
 // GUARDAR / EDITAR
 document.getElementById("formulario").addEventListener("submit", async (e) => {
@@ -206,7 +241,7 @@ onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
   renderTabla(datosGlobales);
 });
 
-// RENDER TABLA
+// TABLA
 function renderTabla(lista) {
   tabla.innerHTML = "";
 
@@ -242,14 +277,12 @@ function renderTabla(lista) {
   `;
 }
 
-// BUSCADOR
+// BUSCAR
 document.getElementById("buscador").addEventListener("keyup", (e) => {
   const texto = e.target.value.toLowerCase();
-
   const filtrados = datosGlobales.filter(d =>
     d.nombre.toLowerCase().includes(texto)
   );
-
   renderTabla(filtrados);
 });
 
@@ -268,11 +301,14 @@ window.eliminar = async (id) => {
     await deleteDoc(doc(db, "cooperaciones", id));
   }
 };
+
 </script>
+
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
 </script>
+
 </body>
 </html>
