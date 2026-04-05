@@ -115,9 +115,9 @@ button {
 
 <div class="card">
 <button onclick="filtrar('todos')">Todos</button>
-<button onclick="filtrar('pagados')">🟢 Al corriente</button>
+<button onclick="filtrar('alCorriente')">🟢 Al corriente</button>
 <button onclick="filtrar('parciales')">🟡 Parciales</button>
-<button onclick="filtrar('pendientes')">🔴 Pendientes</button></div>
+<button onclick="filtrar('pendientes')">🔴 Pendientes</button>
 
 <div class="card">
 <input type="text" id="buscador" placeholder="🔍 Buscar...">
@@ -169,6 +169,7 @@ let datosGlobales = [];
 let chart;
 
 
+
 window.filtrar = function(tipo) {
   let filtrados = [];
 
@@ -176,15 +177,13 @@ window.filtrar = function(tipo) {
     filtrados = datosGlobales;
   }
 
-  if (tipo === "pagados") {
-    // Total mayor o igual a la cooperacion
+  if (tipo === "alCorriente") { // antes "pagados"
     filtrados = datosGlobales.filter(d =>
-      (d.efectivo + d.deposito) >= d.cooperacion && d.cooperacion > 0
+      (d.efectivo + d.deposito) >= d.cooperacion
     );
   }
 
   if (tipo === "parciales") {
-    // Total mayor a 0 pero menor que la cooperacion
     filtrados = datosGlobales.filter(d =>
       (d.efectivo + d.deposito) > 0 &&
       (d.efectivo + d.deposito) < d.cooperacion
@@ -192,7 +191,6 @@ window.filtrar = function(tipo) {
   }
 
   if (tipo === "pendientes") {
-    // Total = 0
     filtrados = datosGlobales.filter(d =>
       (d.efectivo + d.deposito) === 0
     );
@@ -201,8 +199,15 @@ window.filtrar = function(tipo) {
   render(filtrados);
 }
 
+
+
   render(filtrados);
 }
+
+  render(filtrados);
+}
+
+
 
 const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
@@ -233,7 +238,7 @@ function render(datos) {
     let color = "";
 
     if (total >= coop && coop > 0) {
-      estado = "🟢 Al corriente";
+      estado = "🟢 Pagado";
       color = "#2ecc71";
     } else if (total > 0) {
       estado = "🟡 Parcial";
