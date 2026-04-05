@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
-<title>Colonia Juquilita Sección 7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Juquilita App</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
 <style>
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -16,6 +16,7 @@ body {
   margin: 0;
 }
 
+/* HEADER */
 header {
   background: #2c3e50;
   color: white;
@@ -24,59 +25,59 @@ header {
   font-size: 20px;
 }
 
+/* CONTENEDOR */
 .container {
-  padding: 20px;
+  padding: 15px;
 }
 
+/* TARJETAS */
 .card {
   background: white;
-  border-radius: 12px;
+  border-radius: 15px;
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
 }
 
+/* INPUT */
 input {
-  padding: 10px;
+  padding: 12px;
   width: 100%;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 
+/* BOTONES */
 button {
   padding: 10px;
-  margin: 5px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
   background: #3498db;
   color: white;
+  margin: 5px;
 }
 
-button:hover {
-  background: #2980b9;
+/* LISTA TIPO APP */
+.persona {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.nombre {
+  font-weight: bold;
+  font-size: 16px;
 }
 
-th {
-  background: #34495e;
-  color: white;
+.monto {
+  font-size: 14px;
+  color: #555;
 }
 
-td, th {
-  padding: 8px;
-  text-align: center;
-}
-
-tr:nth-child(even) {
-  background: #f2f2f2;
-}
-
+/* PROGRESO */
 .progreso {
   background: #ddd;
   border-radius: 20px;
@@ -88,57 +89,23 @@ tr:nth-child(even) {
   background: green;
   color: white;
   text-align: center;
-  line-height: 25px;
 }
 
-
-tfoot {
+/* BOTÓN FLOTANTE */
+.btn-menu {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
   background: #2c3e50;
   color: white;
-  font-weight: bold;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  font-size: 20px;
 }
 
-#totalGeneral {
-  color: #00ffcc;
-  font-size: 16px;
-}
-
-
-/* 🔥 Fila de totales fija */
-tfoot {
-  position: sticky;
-  bottom: 0;
-  background: #2c3e50;
-  color: white;
-  font-weight: bold;
-  z-index: 2;
-}
-body {
-  font-size: 16px;
-}
-
-table {
-  font-size: 14px;
-}
-
-td, th {
-  padding: 12px;
-}
-
-@media (max-width: 600px) {
-  body {
-    font-size: 18px;
-  }
-
-  table {
-    font-size: 16px;
-  }
-
-  td, th {
-    padding: 14px;
-  }
-}
 </style>
+</head>
 
 <body>
 
@@ -147,39 +114,14 @@ td, th {
 <div class="container">
 
 <div class="card">
-<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
+<input type="text" id="buscador" placeholder="🔍 Buscar...">
 
 <button onclick="exportarExcel()">📥 Excel</button>
 <button onclick="exportarPDF()">📄 PDF</button>
-
-<table id="miTabla">
-<thead>
-<tr>
-<th>No.</th>
-<th>Nombre</th>
-<th>Cooperación</th>
-<th>Efectivo</th>
-<th>Depósito</th>
-<th>Total</th>
-</tr>
-</thead>
-
-<tbody id="tabla"></tbody>
-
-<tfoot>
-<tr id="filaTotales">
-<td></td>
-<td><strong>TOTALES</strong></td>
-<td id="totalC"></td>
-<td id="totalE"></td>
-<td id="totalD"></td>
-<td id="totalGeneral"></td>
-</tr>
-</tfoot>
-
-</table>
-
 </div>
+
+<!-- LISTA -->
+<div id="lista"></div>
 
 <div class="card">
 <h3 id="totales"></h3>
@@ -198,7 +140,10 @@ td, th {
 
 </div>
 
+<button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
+
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
@@ -211,206 +156,90 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const tabla = document.getElementById("tabla");
+const lista = document.getElementById("lista");
 const meta = 661154.46;
 
 let datosGlobales = [];
 let chart;
 
-const formato = (num) => num.toLocaleString('es-MX', {
-  style: 'currency',
-  currency: 'MXN'
-});
+const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
   datosGlobales = [];
 
   snapshot.forEach(doc => {
     datosGlobales.push(doc.data());
-
   });
-  renderTabla(datosGlobales);
+
+  render(datosGlobales);
 });
 
-function renderTabla(datos) {
-  let filas = "";
+function render(datos) {
+
+  lista.innerHTML = "";
+
   let totalC = 0, totalE = 0, totalD = 0;
-  let contador = 1;
 
   datos.forEach(d => {
-    const cooperacion = Number(d.cooperacion) || 0;
-    const efectivo = Number(d.efectivo) || 0;
-    const deposito = Number(d.deposito) || 0;
-    const totalPersona = efectivo + deposito;
 
-    filas += `
-      <tr>
-        <td>${contador++}</td>
-        <td>${d.nombre}</td>
-        <td>${formato(cooperacion)}</td>
-        <td>${formato(efectivo)}</td>
-        <td>${formato(deposito)}</td>
-        <td>${formato(totalPersona)}</td>
-      </tr>
+    const total = (d.efectivo || 0) + (d.deposito || 0);
+
+    lista.innerHTML += `
+      <div class="persona">
+        <div class="nombre">${d.nombre}</div>
+        <div class="monto">Cooperación: ${formato(d.cooperacion)}</div>
+        <div class="monto">Efectivo: ${formato(d.efectivo)}</div>
+        <div class="monto">Depósito: ${formato(d.deposito)}</div>
+        <div class="monto"><strong>Total: ${formato(total)}</strong></div>
+      </div>
     `;
 
-    totalC += cooperacion;
-    totalE += efectivo;
-    totalD += deposito;
+    totalC += d.cooperacion || 0;
+    totalE += d.efectivo || 0;
+    totalD += d.deposito || 0;
   });
-
-  tabla.innerHTML = filas;
-
-document.getElementById("totalC").innerText = formato(totalC);
-document.getElementById("totalE").innerText = formato(totalE);
-document.getElementById("totalD").innerText = formato(totalD);
-document.getElementById("totalGeneral").innerText = formato(totalE + totalD);
 
   const totalGeneral = totalE + totalD;
   const faltante = meta - totalGeneral;
   const porcentaje = ((totalGeneral / meta) * 100).toFixed(2);
 
   document.getElementById("totales").innerHTML = `
-    Total Cooperación: ${formato(totalC)} <br>
-    Total Efectivo: ${formato(totalE)} <br>
-    Total Depósito: ${formato(totalD)} <br>
-    <strong>Total Reunido: ${formato(totalGeneral)}</strong><br>
+    Total: ${formato(totalGeneral)}<br>
     Meta: ${formato(meta)}<br>
     Faltante: ${formato(faltante)}
   `;
 
-  // barra progreso
   const barra = document.getElementById("barraProgreso");
   barra.style.width = porcentaje + "%";
   barra.innerHTML = porcentaje + "%";
 
-  // gráfica
-  const ctx = document.getElementById("grafica");
-
   if (chart) chart.destroy();
 
-  chart = new Chart(ctx, {
+  chart = new Chart(document.getElementById("grafica"), {
     type: 'bar',
     data: {
       labels: ['Reunido', 'Meta'],
-      datasets: [{
-        data: [totalGeneral, meta]
-      }]
+      datasets: [{ data: [totalGeneral, meta] }]
     }
   });
 }
 
-// 🔍 BUSCADOR
+// BUSCADOR
 document.getElementById("buscador").addEventListener("keyup", e => {
   const texto = e.target.value.toLowerCase();
   const filtrados = datosGlobales.filter(d =>
     d.nombre.toLowerCase().includes(texto)
   );
-  renderTabla(filtrados);
+  render(filtrados);
 });
 
-// 📥 EXPORTAR EXCEL
-window.exportarExcel = function() {
-  const ws = XLSX.utils.table_to_sheet(document.getElementById("miTabla"));
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Cooperaciones");
-  XLSX.writeFile(wb, "cooperaciones.xlsx");
-}
-
-window.exportarPDF = function() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  // 📅 Fecha actual
-  const fecha = new Date().toLocaleDateString();
-
-  // 🧾 TÍTULO
-  doc.setFontSize(18);
-  doc.text("REPORTE DE COOPERACIONES", 105, 15, null, null, "center");
-
-  // 📅 FECHA
-  doc.setFontSize(10);
-  doc.text("Fecha: " + fecha, 14, 25);
-
-  // 📊 TABLA
-  doc.autoTable({
-    html: '#miTabla',
-    startY: 30,
-    theme: 'grid',
-    headStyles: { fillColor: [44, 62, 80] },
-    styles: { fontSize: 8 }
-  });
-
-  // 🔢 OBTENER TOTALES DESDE LA TABLA
-  let totalC = 0, totalE = 0, totalD = 0;
-
-  document.querySelectorAll("#tabla tr").forEach(tr => {
-    const tds = tr.querySelectorAll("td");
-
-    if (tds.length >= 5) {
-      const cooperacion = parseFloat(tds[2].innerText.replace(/[^0-9.-]+/g,"")) || 0;
-      const efectivo = parseFloat(tds[3].innerText.replace(/[^0-9.-]+/g,"")) || 0;
-      const deposito = parseFloat(tds[4].innerText.replace(/[^0-9.-]+/g,"")) || 0;
-
-      totalC += cooperacion;
-      totalE += efectivo;
-      totalD += deposito;
-    }
-  });
-
-  const totalGeneral = totalE + totalD;
-  const meta = 661154.46;
-  const faltante = meta - totalGeneral;
-
-  let finalY = doc.lastAutoTable.finalY + 10;
-
-  // 💰 RESUMEN
-  doc.setFontSize(12);
-  doc.text("RESUMEN", 14, finalY);
-
-  doc.setFontSize(10);
-  finalY += 6;
-
-  doc.text(`Total Cooperación: $${totalC.toLocaleString()}`, 14, finalY);
-  finalY += 6;
-
-  doc.text(`Total Efectivo: $${totalE.toLocaleString()}`, 14, finalY);
-  finalY += 6;
-
-  doc.text(`Total Depósito: $${totalD.toLocaleString()}`, 14, finalY);
-  finalY += 6;
-
-  doc.text(`Total Reunido: $${totalGeneral.toLocaleString()}`, 14, finalY);
-  finalY += 6;
-
-  doc.text(`Meta: $${meta.toLocaleString()}`, 14, finalY);
-  finalY += 6;
-
-  doc.text(`Faltante: $${faltante.toLocaleString()}`, 14, finalY);
-
-  // ✍️ FIRMA (opcional)
-  finalY += 20;
-  doc.text("__________________________", 14, finalY);
-  doc.text("Firma", 14, finalY + 5);
-
-  // 💾 GUARDAR
-// 📊 AGREGAR GRÁFICA AL PDF
-const canvas = document.getElementById("grafica");
-const imgData = canvas.toDataURL("image/png");
-
-doc.addPage();
-doc.setFontSize(14);
-doc.text("Gráfica de Avance", 14, 15);
-doc.addImage(imgData, "PNG", 15, 25, 180, 100);
-  doc.save("reporte_cooperaciones.pdf");
-}
-
 </script>
-<a href="https://interpolh.github.io/Juquilita7/index2.html">TODOS LOS DERECHOS RESERVADOS</a>
-  <script>
+
+<script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
 </script>
+
 </body>
 </html>
