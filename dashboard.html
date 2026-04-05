@@ -114,6 +114,12 @@ button {
 <div class="container">
 
 <div class="card">
+<button onclick="filtrar('todos')">Todos</button>
+<button onclick="filtrar('pagados')">🟢 Pagados</button>
+<button onclick="filtrar('pendientes')">🔴 Pendientes</button>
+</div>
+
+<div class="card">
 <input type="text" id="buscador" placeholder="🔍 Buscar...">
 
 <button onclick="exportarExcel()">📥 Excel</button>
@@ -162,6 +168,29 @@ const meta = 661154.46;
 let datosGlobales = [];
 let chart;
 
+window.filtrar = function(tipo) {
+
+  let filtrados = [];
+
+  if (tipo === "todos") {
+    filtrados = datosGlobales;
+  }
+
+  if (tipo === "pagados") {
+    filtrados = datosGlobales.filter(d =>
+      (d.efectivo + d.deposito) >= d.cooperacion
+    );
+  }
+
+  if (tipo === "pendientes") {
+    filtrados = datosGlobales.filter(d =>
+      (d.efectivo + d.deposito) === 0
+    );
+  }
+
+  render(filtrados);
+}
+
 const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
@@ -182,21 +211,41 @@ function render(datos) {
 
   datos.forEach(d => {
 
-    const total = (d.efectivo || 0) + (d.deposito || 0);
+    const coop = d.cooperacion || 0;
+    const efec = d.efectivo || 0;
+    const dep = d.deposito || 0;
+    const total = efec + dep;
+
+    let estado = "";
+    let color = "";
+
+    if (total >= coop && coop > 0) {
+      estado = "🟢 Pagado";
+      color = "#2ecc71";
+    } else if (total > 0) {
+      estado = "🟡 Parcial";
+      color = "#f39c12";
+    } else {
+      estado = "🔴 Pendiente";
+      color = "#e74c3c";
+    }
 
     lista.innerHTML += `
-      <div class="persona">
+      <div class="persona" style="border-left: 6px solid ${color}">
         <div class="nombre">${d.nombre}</div>
-        <div class="monto">Cooperación: ${formato(d.cooperacion)}</div>
-        <div class="monto">Efectivo: ${formato(d.efectivo)}</div>
-        <div class="monto">Depósito: ${formato(d.deposito)}</div>
+        <div class="monto">Cooperación: ${formato(coop)}</div>
+        <div class="monto">Efectivo: ${formato(efec)}</div>
+        <div class="monto">Depósito: ${formato(dep)}</div>
         <div class="monto"><strong>Total: ${formato(total)}</strong></div>
+        <div style="margin-top:5px;font-weight:bold;color:${color}">
+          ${estado}
+        </div>
       </div>
     `;
 
-    totalC += d.cooperacion || 0;
-    totalE += d.efectivo || 0;
-    totalD += d.deposito || 0;
+    totalC += coop;
+    totalE += efec;
+    totalD += dep;
   });
 
   const totalGeneral = totalE + totalD;
@@ -223,6 +272,7 @@ function render(datos) {
     }
   });
 }
+
 
 // BUSCADOR
 document.getElementById("buscador").addEventListener("keyup", e => {
