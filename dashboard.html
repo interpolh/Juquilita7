@@ -2,74 +2,130 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juquilita App</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+<title>ADMIN - Cooperaciones</title>
 
 <style>
-body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin:0; }
-header { background: #2c3e50; color: white; padding: 15px; text-align:center; font-size:20px; }
-.container { padding:15px; }
-.card { background:white; border-radius:15px; padding:15px; margin-bottom:15px; box-shadow:0px 4px 10px rgba(0,0,0,0.1); }
-input { padding:12px; width:100%; border-radius:10px; border:1px solid #ccc; margin-bottom:10px; }
-button { padding:10px; border:none; border-radius:10px; background:#3498db; color:white; margin:5px; cursor:pointer; }
-button.active { background:#1abc9c; }
-.persona { background:white; border-radius:12px; padding:12px; margin-bottom:10px; box-shadow:0px 2px 8px rgba(0,0,0,0.1); }
-.nombre { font-weight:bold; font-size:16px; }
-.monto { font-size:14px; color:#555; }
-.progreso { background:#ddd; border-radius:20px; overflow:hidden; }
-.barra { height:25px; background:green; color:white; text-align:center; }
-.btn-menu { position:fixed; bottom:20px; right:20px; background:#2c3e50; color:white; border-radius:50%; width:55px; height:55px; font-size:20px; }
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 95%;
+}
+
+button {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.guardar { background: #27ae60; color: white; }
+.cancelar { background: #e74c3c; color: white; }
+.editar { background: #3498db; color: white; }
+.eliminar { background: #c0392b; color: white; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+}
+
+td, th {
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
 </style>
+
+<link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-<header>Colonia Juquilita Sección 7</header>
+<!-- LOGIN -->
+<div id="login" class="card">
+  <h3>🔐 Acceso Administrador</h3>
+  <input type="password" id="clave" placeholder="Ingresa la clave">
+  <button onclick="verificarClave()">Entrar</button>
+</div>
 
-<div class="container">
+<!-- CONTENIDO -->
+<div id="contenido" style="display:none;">
 
-  <div class="card">
-    <button onclick="filtrar('todos')" id="btn-todos">Todos</button>
-    <button onclick="filtrar('alCorriente')" id="btn-pagados">🟢 Al corriente</button>
-    <button onclick="filtrar('parciales')" id="btn-parciales">🟡 Parciales</button>
-    <button onclick="filtrar('pendientes')" id="btn-pendientes">🔴 Pendientes</button>
-  </div>
+<h2>Panel Administrador</h2>
 
-  <div class="card">
-    <input type="text" id="buscador" placeholder="🔍 Buscar...">
-    <button onclick="exportarExcel()">📥 Excel</button>
-    <button onclick="exportarPDF()">📄 PDF</button>
-  </div>
+<div class="card">
+<form id="formulario">
+  <input type="hidden" id="docId">
 
-  <div id="lista"></div>
+  <input type="text" id="nombre" placeholder="Nombre" required>
+  <input type="number" id="cooperacion" placeholder="Cooperación">
+  <input type="number" id="efectivo" placeholder="Efectivo">
+  <input type="number" id="deposito" placeholder="Depósito">
 
-  <div class="card">
-    <h3 id="totales"></h3>
-  </div>
+  <button type="submit" class="guardar">Guardar</button>
+  <button type="button" onclick="cancelarEdicion()" class="cancelar">Cancelar</button>
+</form>
+</div>
 
-  <div class="card">
-    <h3>Progreso</h3>
-    <div class="progreso">
-      <div id="barraProgreso" class="barra">0%</div>
-    </div>
-  </div>
+<div class="card">
+<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
+</div>
 
-  <div class="card">
-    <canvas id="grafica"></canvas>
-  </div>
+<div class="card">
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Coop</th>
+<th>Efectivo</th>
+<th>Depósito</th>
+<th>Total</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3 id="totales"></h3>
+</div>
 
 </div>
 
-<button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-// Configura tu Firebase real aquí
 const firebaseConfig = {
-  apiKey: "TU_API_KEY_REAL",
+  apiKey: "TU_API_KEY",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
   projectId: "cooperaciones-juquilita"
 };
@@ -77,99 +133,146 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const lista = document.getElementById("lista");
-const meta = 661154.46;
+const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+
+const tabla = document.getElementById("tabla");
+
 let datosGlobales = [];
-let chart;
 
-// Función para activar el botón seleccionado
-function activarBoton(tipo) {
-  document.querySelectorAll('.card button').forEach(b => b.classList.remove('active'));
-  document.getElementById("btn-" + tipo).classList.add('active');
-}
+// LOGIN
+window.verificarClave = () => {
+  const clave = document.getElementById("clave").value;
+  const CLAVE_CORRECTA = "POLH"; // 🔥 CAMBIA ESTO
 
-// Filtro mejorado
-window.filtrar = function(tipo) {
-  let filtrados = [];
-  if (tipo === "todos") filtrados = datosGlobales;
-  if (tipo === "alCorriente") filtrados = datosGlobales.filter(d => (d.efectivo + d.deposito) >= d.cooperacion);
-  if (tipo === "parciales") filtrados = datosGlobales.filter(d => (d.efectivo + d.deposito) > 0 && (d.efectivo + d.deposito) < d.cooperacion);
-  if (tipo === "pendientes") filtrados = datosGlobales.filter(d => (d.efectivo + d.deposito) === 0);
-  activarBoton(tipo);
-  render(filtrados);
-}
+  if (clave === CLAVE_CORRECTA) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("contenido").style.display = "block";
+  } else {
+    alert("Clave incorrecta");
+  }
+};
 
-// Formato moneda
-const formato = (n) => n.toLocaleString('es-MX', { style:'currency', currency:'MXN' });
+// GUARDAR / EDITAR
+document.getElementById("formulario").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-// Carga datos de Firestore
+  const id = document.getElementById("docId").value;
+  const nombre = document.getElementById("nombre").value.trim();
+
+  if (!nombre) return alert("El nombre es obligatorio");
+
+  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty && !id) {
+    return alert("Ese nombre ya existe");
+  }
+
+  const datos = {
+    nombre,
+    cooperacion: Number(document.getElementById("cooperacion").value) || 0,
+    efectivo: Number(document.getElementById("efectivo").value) || 0,
+    deposito: Number(document.getElementById("deposito").value) || 0
+  };
+
+  if (id) {
+    await updateDoc(doc(db, "cooperaciones", id), datos);
+    alert("Actualizado");
+  } else {
+    await addDoc(collection(db, "cooperaciones"), datos);
+    alert("Guardado");
+  }
+
+  cancelarEdicion();
+});
+
+// CANCELAR
+window.cancelarEdicion = () => {
+  document.getElementById("formulario").reset();
+  document.getElementById("docId").value = "";
+};
+
+// MOSTRAR
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
   datosGlobales = [];
-  snapshot.forEach(doc => datosGlobales.push(doc.data()));
-  filtrar('todos'); // Mostrar todos al cargar
+
+  snapshot.forEach(docSnap => {
+    datosGlobales.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
+  });
+
+  renderTabla(datosGlobales);
 });
 
-// Render de la lista y gráficos
-function render(datos) {
-  lista.innerHTML = "";
+// RENDER TABLA
+function renderTabla(lista) {
+  tabla.innerHTML = "";
+
   let totalC = 0, totalE = 0, totalD = 0;
-  datos.forEach(d => {
-    const coop = d.cooperacion || 0;
-    const efec = d.efectivo || 0;
-    const dep = d.deposito || 0;
-    const total = efec + dep;
 
-    let estado = "", color = "";
-    if (total >= coop && coop > 0) { estado="🟢 Al corriente"; color="#2ecc71"; }
-    else if (total > 0) { estado="🟡 Parcial"; color="#f39c12"; }
-    else { estado="🔴 Pendiente"; color="#e74c3c"; }
+  lista.forEach(d => {
+    const total = (d.cooperacion || 0) + (d.efectivo || 0) + (d.deposito || 0);
 
-    lista.innerHTML += `
-      <div class="persona" style="border-left:6px solid ${color}">
-        <div class="nombre">${d.nombre}</div>
-        <div class="monto">Cooperación: ${formato(coop)}</div>
-        <div class="monto">Efectivo: ${formato(efec)}</div>
-        <div class="monto">Depósito: ${formato(dep)}</div>
-        <div class="monto"><strong>Total: ${formato(total)}</strong></div>
-        <div style="margin-top:5px;font-weight:bold;color:${color}">${estado}</div>
-      </div>`;
-    totalC += coop; totalE += efec; totalD += dep;
+    tabla.innerHTML += `
+      <tr>
+        <td>${d.nombre}</td>
+        <td>${formato(d.cooperacion)}</td>
+        <td>${formato(d.efectivo)}</td>
+        <td>${formato(d.deposito)}</td>
+        <td><strong>${formato(total)}</strong></td>
+        <td>
+          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito})">Editar</button>
+          <button class="eliminar" onclick="eliminar('${d.id}')">Eliminar</button>
+        </td>
+      </tr>
+    `;
+
+    totalC += d.cooperacion || 0;
+    totalE += d.efectivo || 0;
+    totalD += d.deposito || 0;
   });
 
-  const totalGeneral = totalE + totalD;
-  const faltante = meta - totalGeneral;
-  const porcentaje = ((totalGeneral/meta)*100).toFixed(2);
-
-  document.getElementById("totales").innerHTML = `Total: ${formato(totalGeneral)}<br>Meta: ${formato(meta)}<br>Faltante: ${formato(faltante)}`;
-
-  const barra = document.getElementById("barraProgreso");
-  barra.style.width = porcentaje + "%";
-  barra.innerHTML = porcentaje + "%";
-
-  if (chart) chart.destroy();
-  chart = new Chart(document.getElementById("grafica"), {
-    type:'bar',
-    data:{ labels:['Reunido','Meta'], datasets:[{ data:[totalGeneral, meta], backgroundColor:['#3498db','#bdc3c7'] }] }
-  });
+  document.getElementById("totales").innerHTML = `
+    Total Cooperación: ${formato(totalC)} <br>
+    Total Efectivo: ${formato(totalE)} <br>
+    Total Depósito: ${formato(totalD)} <br>
+    <strong>Total General: ${formato(totalC + totalE + totalD)}</strong>
+  `;
 }
 
-// Buscador mejorado
-document.getElementById("buscador").addEventListener("keyup", e => {
+// BUSCADOR
+document.getElementById("buscador").addEventListener("keyup", (e) => {
   const texto = e.target.value.toLowerCase();
+
   const filtrados = datosGlobales.filter(d =>
-    d.nombre.toLowerCase().includes(texto) ||
-    (d.cooperacion?.toString().includes(texto)) ||
-    (d.efectivo?.toString().includes(texto)) ||
-    (d.deposito?.toString().includes(texto))
+    d.nombre.toLowerCase().includes(texto)
   );
-  render(filtrados);
+
+  renderTabla(filtrados);
 });
 
-</script>
+// EDITAR
+window.editar = (id, nombre, coop, efec, dep) => {
+  document.getElementById("docId").value = id;
+  document.getElementById("nombre").value = nombre;
+  document.getElementById("cooperacion").value = coop;
+  document.getElementById("efectivo").value = efec;
+  document.getElementById("deposito").value = dep;
+};
 
+// ELIMINAR
+window.eliminar = async (id) => {
+  if (confirm("¿Eliminar registro?")) {
+    await deleteDoc(doc(db, "cooperaciones", id));
+  }
+};
+</script>
 <script>
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
 </script>
-
 </body>
 </html>
