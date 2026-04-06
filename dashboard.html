@@ -79,6 +79,7 @@ const db = getFirestore(app);
 const lista = document.getElementById("lista");
 const meta = 661154.46;
 let datosGlobales = [];
+let datosFiltradosActuales = [];
 let chart;
 
 // FILTRADO POR RANGOS
@@ -120,6 +121,7 @@ onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
 
 // RENDER LISTA
 function render(datos) {
+  datosFiltradosActuales = datos; // Guardamos lo que se está mostrando
   lista.innerHTML = "";
 
   let totalC = 0, totalE = 0, totalD = 0;
@@ -130,12 +132,8 @@ function render(datos) {
     const dep = d.deposito || 0;
     const total = efec + dep;
 
-    let estado = "";
-    let color = "";
-
-    if (total >= 10000) { estado = "🟢 Pagado"; color = "#2ecc71"; }
-    else if (total >= 5000) { estado = "🟡 Parcial"; color = "#f39c12"; }
-    else { estado = "🔴 Pendiente"; color = "#e74c3c"; }
+    let estado = total >= 10000 ? "🟢 Pagado" : total >= 5000 ? "🟡 Parcial" : "🔴 Pendiente";
+    let color = total >= 10000 ? "#2ecc71" : total >= 5000 ? "#f39c12" : "#e74c3c";
 
     lista.innerHTML += `
       <div class="persona" style="border-left: 6px solid ${color}">
@@ -148,9 +146,7 @@ function render(datos) {
       </div>
     `;
 
-    totalC += coop;
-    totalE += efec;
-    totalD += dep;
+    totalC += coop; totalE += efec; totalD += dep;
   });
 
   const totalGeneral = totalE + totalD;
@@ -167,7 +163,7 @@ function render(datos) {
   barra.style.width = porcentaje + "%";
   barra.innerHTML = porcentaje + "%";
 
-  if (chart) chart.destroy();
+  if(chart) chart.destroy();
   chart = new Chart(document.getElementById("grafica"), {
     type: 'bar',
     data: { labels: ['Reunido', 'Meta'], datasets: [{ data: [totalGeneral, meta] }] }
@@ -186,21 +182,20 @@ document.getElementById("buscador").addEventListener("keyup", e => {
 // EXPORTAR EXCEL
 function exportarExcel() {
   let csv = "Nombre,Cooperación,Efectivo,Depósito,Total,Estado\n";
-  datosGlobales.forEach(d => {
+  datosFiltradosActuales.forEach(d => {
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
     const dep = d.deposito || 0;
     const total = efec + dep;
-    let estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
+    const estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
     csv += `${d.nombre},${coop},${efec},${dep},${total},${estado}\n`;
   });
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = "cooperaciones.csv";
   a.click();
-  URL.revokeObjectURL(url);
+  URL.revokeObjectURL(a.href);
 }
 
 // EXPORTAR PDF
@@ -209,17 +204,20 @@ function exportarPDF() {
   const doc = new jsPDF();
   doc.setFontSize(12);
   doc.text("Listado de Cooperaciones", 10, 10);
+
   let y = 20;
-  datosGlobales.forEach(d => {
+  datosFiltradosActuales.forEach(d => {
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
     const dep = d.deposito || 0;
     const total = efec + dep;
-    let estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
+    const estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
+
     doc.text(`${d.nombre} | Coop: ${coop} | Efectivo: ${efec} | Dep: ${dep} | Total: ${total} | ${estado}`, 10, y);
     y += 10;
     if(y > 280){ doc.addPage(); y = 10; } // salto de página si es necesario
   });
+
   doc.save("cooperaciones.pdf");
 }
 </script>
