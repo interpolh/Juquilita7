@@ -13,9 +13,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
- 
-
-  
 body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; }
 header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 20px; }
 .container { padding: 15px; }
@@ -70,11 +67,8 @@ button { padding: 10px; border: none; border-radius: 10px; background: #3498db; 
 
 <button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
 
- 
-
-  
 <script>
-// REEMPLAZA ESTO CON TU CONFIGURACIÓN REAL DE FIREBASE
+// Configuración de Firebase (reemplaza con tus datos reales)
 const firebaseConfig = {
   apiKey: "TU_API_KEY_REAL",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
@@ -151,23 +145,29 @@ function render(datos) {
       </div>
     `;
 
-    totalC += coop; totalE += efec; totalD += dep;
+    totalC += coop;
+    totalE += efec;
+    totalD += dep;
   });
 
   const totalGeneral = totalE + totalD;
   const faltante = meta - totalGeneral;
   const porcentaje = ((totalGeneral / meta) * 100).toFixed(2);
 
+  // Mostrar totales incluyendo Cooperaciones
   document.getElementById("totales").innerHTML = `
-    Total: ${formato(totalGeneral)}<br>
+    Total: ${formato(totalGeneral)} (Efectivo y Depósito)<br>
     Meta: ${formato(meta)}<br>
-    Faltante: ${formato(faltante)}
+    Faltante: ${formato(faltante)}<br>
+    Cooperaciones: ${formato(totalC)}
   `;
 
+  // Actualizar barra de progreso
   const barra = document.getElementById("barraProgreso");
   barra.style.width = porcentaje + "%";
   barra.innerHTML = porcentaje + "%";
 
+  // Actualizar gráfica
   if(chart) chart.destroy();
   chart = new Chart(document.getElementById("grafica"), {
     type: 'bar',
@@ -195,6 +195,10 @@ function exportarExcel() {
     const estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
     csv += `${d.nombre},${coop},${efec},${dep},${total},${estado}\n`;
   });
+  // Agregar total de cooperaciones al final
+  const totalC = datosFiltradosActuales.reduce((suma, d) => suma + (d.cooperacion || 0), 0);
+  csv += `,,,$,${totalC},Total Cooperaciones\n`;
+
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -204,19 +208,15 @@ function exportarExcel() {
 }
 
 // EXPORTAR PDF
-
-
 function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.setFontSize(14);
 
-  // Fecha actual
   const fecha = new Date();
   const fechaStr = fecha.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
   doc.text(`Listado de Cooperaciones - Fecha: ${fechaStr}`, 14, 15);
 
-  // Preparar datos con numeración
   const data = datosFiltradosActuales.map((d, index) => {
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
@@ -229,7 +229,7 @@ function exportarPDF() {
     else { estado = "Pendiente"; color = "#e74c3c"; }
 
     return [
-      index + 1, // numeración
+      index + 1,
       d.nombre,
       coop.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
       efec.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
@@ -240,17 +240,15 @@ function exportarPDF() {
     ];
   });
 
-  // Generar tabla
   doc.autoTable({
     startY: 20,
     head: [['#', 'Nombre', 'Cooperación', 'Efectivo', 'Depósito', 'Total', 'Estado']],
     body: data,
     didParseCell: function (data) {
-      // Colorear columna Estado según color
       if (data.column.index === 6) { 
         const color = data.row.raw[7];
         data.cell.styles.fillColor = color;
-        data.cell.styles.textColor = 255; // blanco
+        data.cell.styles.textColor = 255;
       }
     },
     theme: 'grid',
@@ -258,20 +256,17 @@ function exportarPDF() {
     styles: { fontSize: 10 }
   });
 
+  // Total de cooperaciones al final del PDF
+  const totalC = datosFiltradosActuales.reduce((suma, d) => suma + (d.cooperacion || 0), 0);
+  doc.text(`Total de Cooperaciones: ${totalC.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`, 14, doc.lastAutoTable.finalY + 10);
+
   doc.save(`cooperaciones_${fechaStr.replace(/[\/,: ]/g,'_')}.pdf`);
 }
 
-
-
-
-</script>
-
-<script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
 </script>
 
-  
 </body>
 </html>
