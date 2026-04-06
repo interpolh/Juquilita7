@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Juquilita App</title>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -26,7 +23,6 @@ button { padding: 10px; border: none; border-radius: 10px; background: #3498db; 
 </head>
 
 <body>
-
 <header>Colonia Juquilita Sección 7</header>
 
 <div class="container">
@@ -83,47 +79,47 @@ const meta = 661154.46;
 let datosGlobales = [];
 let chart;
 
+// FILTRADO POR RANGOS
 window.filtrar = function(tipo) {
   let filtrados = [];
 
-  if (tipo === "todos") {
-    filtrados = datosGlobales;
-  }
+  if (tipo === "todos") filtrados = datosGlobales;
 
-  if (tipo === "pagados") {
+  if (tipo === "pendientes") {
     filtrados = datosGlobales.filter(d => {
-      const coop = d.cooperacion || 0;
       const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total >= coop && coop > 0;
+      return total >= 0 && total < 5000;
     });
   }
 
   if (tipo === "parciales") {
     filtrados = datosGlobales.filter(d => {
-      const coop = d.cooperacion || 0;
       const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total > 0 && total < coop;
+      return total >= 5000 && total <= 9900;
     });
   }
 
-  if (tipo === "pendientes") {
+  if (tipo === "pagados") {
     filtrados = datosGlobales.filter(d => {
       const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total === 0;
+      return total >= 10000;
     });
   }
 
   render(filtrados);
 }
 
+// FORMATO MONEDA
 const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
+// DATOS DESDE FIRESTORE
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
   datosGlobales = [];
   snapshot.forEach(doc => datosGlobales.push(doc.data()));
   render(datosGlobales);
 });
 
+// RENDER LISTA
 function render(datos) {
   lista.innerHTML = "";
 
@@ -138,16 +134,9 @@ function render(datos) {
     let estado = "";
     let color = "";
 
-    if (total >= coop && coop > 0) {
-      estado = "🟢 Pagado";
-      color = "#2ecc71";
-    } else if (total > 0) {
-      estado = "🟡 Parcial";
-      color = "#f39c12";
-    } else {
-      estado = "🔴 Pendiente";
-      color = "#e74c3c";
-    }
+    if (total >= 10000) { estado = "🟢 Pagado"; color = "#2ecc71"; }
+    else if (total >= 5000) { estado = "🟡 Parcial"; color = "#f39c12"; }
+    else { estado = "🔴 Pendiente"; color = "#e74c3c"; }
 
     lista.innerHTML += `
       <div class="persona" style="border-left: 6px solid ${color}">
@@ -180,17 +169,13 @@ function render(datos) {
   barra.innerHTML = porcentaje + "%";
 
   if (chart) chart.destroy();
-
   chart = new Chart(document.getElementById("grafica"), {
     type: 'bar',
-    data: {
-      labels: ['Reunido', 'Meta'],
-      datasets: [{ data: [totalGeneral, meta] }]
-    }
+    data: { labels: ['Reunido', 'Meta'], datasets: [{ data: [totalGeneral, meta] }] }
   });
 }
 
-// BUSCADOR
+// BUSCADOR POR NOMBRE
 document.getElementById("buscador").addEventListener("keyup", e => {
   const texto = e.target.value.toLowerCase();
   const filtrados = datosGlobales.filter(d =>
