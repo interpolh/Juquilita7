@@ -1,53 +1,62 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
- <meta name="apple-mobile-web-app-capable" content="yes">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#2c3e50">
 
-<title>Proyecto</title>
+  <!-- Estilos para el botón flotante -->
+  <style>
+    /* Botón flotante de inicio */
+    .btn-flotante {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s, background 0.3s;
+      z-index: 1000; /* Siempre encima del contenido */
+    }
 
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#2c3e50">
-
+    /* Efecto hover */
+    .btn-flotante:hover {
+      background: #3498db;
+      transform: scale(1.1);
+    }
+  </style>
 </head>
-/* Botón flotante de inicio */
-.btn-flotante {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s, background 0.3s;
-  z-index: 1000; /* Siempre encima del contenido */
-}
+<body>
 
-/* Efecto hover */
-.btn-flotante:hover {
-  background: #3498db;
-  transform: scale(1.1);
-}
- 
- <body>
-<img src="coti1.jpeg" alt="Proyecto electrificación">
-<img src="coti2.jpeg" alt="Proyecto electrificación">
+<img src="coti1.jpeg" alt="Proyecto">
+ <img src="coti2.jpeg" alt="Proyecto">
 
- 
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-}
-</script>
 <!-- Botón flotante de Inicio -->
 <button id="btnInicio" class="btn-flotante" title="Ir al inicio">🏠</button>
-  
- </body>
+
+<!-- Scripts -->
+<script>
+  // Registrar Service Worker
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js");
+  }
+
+  // Esperar a que el DOM cargue antes de añadir el evento
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('btnInicio').addEventListener('click', () => {
+      window.location.href = 'index.html'; // Página de inicio
+    });
+  });
+</script>
+
+</body>
 </html>
