@@ -199,56 +199,61 @@ function exportarExcel() {
 
 // EXPORTAR PDF
 
+
 function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   doc.setFontSize(14);
-  doc.text("Listado de Cooperaciones", 14, 15);
 
-  // Preparar datos para la tabla
-  const data = datosFiltradosActuales.map(d => {
+  // Fecha actual
+  const fecha = new Date();
+  const fechaStr = fecha.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+  doc.text(`Listado de Cooperaciones - Fecha: ${fechaStr}`, 14, 15);
+
+  // Preparar datos con numeración
+  const data = datosFiltradosActuales.map((d, index) => {
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
     const dep = d.deposito || 0;
     const total = efec + dep;
-    let estado = "";
-    let color = "";
-    
-    if(total >= 10000) { estado = "Pagado"; color = "#2ecc71"; }
-    else if(total >= 5000) { estado = "Parcial"; color = "#f39c12"; }
+
+    let estado = "", color = "";
+    if (total >= 10000) { estado = "Pagado"; color = "#2ecc71"; }
+    else if (total >= 5000) { estado = "Parcial"; color = "#f39c12"; }
     else { estado = "Pendiente"; color = "#e74c3c"; }
 
     return [
+      index + 1, // numeración
       d.nombre,
       coop.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
       efec.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
       dep.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
       total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
       estado,
-      color // guardamos el color para usar en la tabla
+      color
     ];
   });
 
-  // Generar tabla con autoTable
+  // Generar tabla
   doc.autoTable({
     startY: 20,
-    head: [['Nombre', 'Cooperación', 'Efectivo', 'Depósito', 'Total', 'Estado']],
+    head: [['#', 'Nombre', 'Cooperación', 'Efectivo', 'Depósito', 'Total', 'Estado']],
     body: data,
     didParseCell: function (data) {
-      // Colorear la columna Estado según color
-      if (data.column.index === 5) { 
-        const color = data.row.raw[6];
+      // Colorear columna Estado según color
+      if (data.column.index === 6) { 
+        const color = data.row.raw[7];
         data.cell.styles.fillColor = color;
-        data.cell.styles.textColor = 255; // blanco para contraste
+        data.cell.styles.textColor = 255; // blanco
       }
     },
     theme: 'grid',
-    headStyles: { fillColor: '#3498db', textColor: 255 }
+    headStyles: { fillColor: '#3498db', textColor: 255 },
+    styles: { fontSize: 10 }
   });
 
-  doc.save("cooperaciones.pdf");
+  doc.save(`cooperaciones_${fechaStr.replace(/[\/,: ]/g,'_')}.pdf`);
 }
-
 
 
 
