@@ -13,6 +13,31 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
+  /* Botón flotante de inicio */
+.btn-flotante {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s, background 0.3s;
+  z-index: 1000; /* Siempre encima del contenido */
+}
+
+/* Efecto hover */
+.btn-flotante:hover {
+  background: #3498db;
+  transform: scale(1.1);
+}
+
+  
 body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; }
 header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 20px; }
 .container { padding: 15px; }
@@ -67,6 +92,13 @@ button { padding: 10px; border: none; border-radius: 10px; background: #3498db; 
 
 <button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
 
+  // Redirigir al index al hacer clic
+document.getElementById('btnInicio').addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
+
+
+  
 <script>
 // REEMPLAZA ESTO CON TU CONFIGURACIÓN REAL DE FIREBASE
 const firebaseConfig = {
@@ -265,6 +297,8 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js");
 }
 </script>
-
+<!-- Botón flotante de Inicio -->
+<button id="btnInicio" class="btn-flotante" title="Ir al inicio">🏠</button>
+  
 </body>
 </html>
