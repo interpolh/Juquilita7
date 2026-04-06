@@ -197,7 +197,7 @@ function exportarExcel() {
   });
   // Agregar total de cooperaciones al final
   const totalC = datosFiltradosActuales.reduce((suma, d) => suma + (d.cooperacion || 0), 0);
-  csv += `,,,$,${totalC},Total Cooperaciones\n`;
+  csv += `,,,${totalC},,Total Cooperaciones\n`;
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
