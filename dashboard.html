@@ -7,6 +7,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -196,27 +198,61 @@ function exportarExcel() {
 }
 
 // EXPORTAR PDF
+
 function exportarPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  doc.setFontSize(12);
-  doc.text("Listado de Cooperaciones", 10, 10);
+  doc.setFontSize(14);
+  doc.text("Listado de Cooperaciones", 14, 15);
 
-  let y = 20;
-  datosFiltradosActuales.forEach(d => {
+  // Preparar datos para la tabla
+  const data = datosFiltradosActuales.map(d => {
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
     const dep = d.deposito || 0;
     const total = efec + dep;
-    const estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
+    let estado = "";
+    let color = "";
+    
+    if(total >= 10000) { estado = "Pagado"; color = "#2ecc71"; }
+    else if(total >= 5000) { estado = "Parcial"; color = "#f39c12"; }
+    else { estado = "Pendiente"; color = "#e74c3c"; }
 
-    doc.text(`${d.nombre} | Coop: ${coop} | Efectivo: ${efec} | Dep: ${dep} | Total: ${total} | ${estado}`, 10, y);
-    y += 10;
-    if(y > 280){ doc.addPage(); y = 10; }
+    return [
+      d.nombre,
+      coop.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+      efec.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+      dep.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+      total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }),
+      estado,
+      color // guardamos el color para usar en la tabla
+    ];
+  });
+
+  // Generar tabla con autoTable
+  doc.autoTable({
+    startY: 20,
+    head: [['Nombre', 'Cooperación', 'Efectivo', 'Depósito', 'Total', 'Estado']],
+    body: data,
+    didParseCell: function (data) {
+      // Colorear la columna Estado según color
+      if (data.column.index === 5) { 
+        const color = data.row.raw[6];
+        data.cell.styles.fillColor = color;
+        data.cell.styles.textColor = 255; // blanco para contraste
+      }
+    },
+    theme: 'grid',
+    headStyles: { fillColor: '#3498db', textColor: 255 }
   });
 
   doc.save("cooperaciones.pdf");
 }
+
+
+
+
+
 </script>
 
 <script>
