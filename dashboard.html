@@ -126,9 +126,9 @@ function render(datos) {
   let totalC = 0, totalE = 0, totalD = 0;
 
   datos.forEach(d => {
-    const coop = d.cooperacion || 0;
-    const efec = d.efectivo || 0;
-    const dep = d.deposito || 0;
+    const coop = parseFloat(d.cooperacion) || 0;
+    const efec = parseFloat(d.efectivo) || 0;
+    const dep = parseFloat(d.deposito) || 0;
     const total = efec + dep;
 
     let estado = total >= 10000 ? "🟢 Pagado" : total >= 5000 ? "🟡 Parcial" : "🔴 Pendiente";
@@ -188,15 +188,15 @@ document.getElementById("buscador").addEventListener("keyup", e => {
 function exportarExcel() {
   let csv = "Nombre,Cooperación,Efectivo,Depósito,Total,Estado\n";
   datosFiltradosActuales.forEach(d => {
-    const coop = d.cooperacion || 0;
-    const efec = d.efectivo || 0;
-    const dep = d.deposito || 0;
+    const coop = parseFloat(d.cooperacion) || 0;
+    const efec = parseFloat(d.efectivo) || 0;
+    const dep = parseFloat(d.deposito) || 0;
     const total = efec + dep;
     const estado = total >= 10000 ? "Pagado" : total >= 5000 ? "Parcial" : "Pendiente";
     csv += `${d.nombre},${coop},${efec},${dep},${total},${estado}\n`;
   });
   // Agregar total de cooperaciones al final
-  const totalC = datosFiltradosActuales.reduce((suma, d) => suma + (d.cooperacion || 0), 0);
+  const totalC = datosFiltradosActuales.reduce((s, d) => s + (parseFloat(d.cooperacion) || 0), 0);
   csv += `,,,${totalC},,Total Cooperaciones\n`;
 
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -218,9 +218,9 @@ function exportarPDF() {
   doc.text(`Listado de Cooperaciones - Fecha: ${fechaStr}`, 14, 15);
 
   const data = datosFiltradosActuales.map((d, index) => {
-    const coop = d.cooperacion || 0;
-    const efec = d.efectivo || 0;
-    const dep = d.deposito || 0;
+    const coop = parseFloat(d.cooperacion) || 0;
+    const efec = parseFloat(d.efectivo) || 0;
+    const dep = parseFloat(d.deposito) || 0;
     const total = efec + dep;
 
     let estado = "", color = "";
@@ -256,11 +256,11 @@ function exportarPDF() {
     styles: { fontSize: 10 }
   });
 
-  // Calcular totales
-  const totalE = datosFiltradosActuales.reduce((s, d) => s + (d.efectivo || 0), 0);
-  const totalD = datosFiltradosActuales.reduce((s, d) => s + (d.deposito || 0), 0);
+  // Calcular totales de forma segura
+  const totalE = datosFiltradosActuales.reduce((s, d) => s + (parseFloat(d.efectivo) || 0), 0);
+  const totalD = datosFiltradosActuales.reduce((s, d) => s + (parseFloat(d.deposito) || 0), 0);
   const totalGeneral = totalE + totalD;
-  const totalC = datosFiltradosActuales.reduce((s, d) => s + (d.cooperacion || 0), 0);
+  const totalC = datosFiltradosActuales.reduce((s, d) => s + (parseFloat(d.cooperacion) || 0), 0);
   const faltante = meta - totalGeneral;
 
   // Mostrar totales al final del PDF
