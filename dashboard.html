@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Juquilita App</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Librería jsPDF para exportar PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
 body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; }
@@ -63,18 +65,19 @@ button { padding: 10px; border: none; border-radius: 10px; background: #3498db; 
 
 <button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
+<script>
+// REEMPLAZA ESTO CON TU CONFIGURACIÓN REAL DE FIREBASE
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
+  apiKey: "TU_API_KEY_REAL",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita"
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.appspot.com",
+  messagingSenderId: "TU_MESSAGING_SENDER_ID",
+  appId: "TU_APP_ID"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 const lista = document.getElementById("lista");
 const meta = 661154.46;
@@ -83,37 +86,31 @@ let datosFiltradosActuales = [];
 let chart;
 
 // FILTRADO POR RANGOS
-window.filtrar = function(tipo) {
+function filtrar(tipo) {
   let filtrados = [];
 
   if (tipo === "todos") filtrados = datosGlobales;
-  if (tipo === "pendientes") {
-    filtrados = datosGlobales.filter(d => {
-      const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total >= 0 && total < 5000;
-    });
-  }
-  if (tipo === "parciales") {
-    filtrados = datosGlobales.filter(d => {
-      const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total >= 5000 && total <= 9900;
-    });
-  }
-  if (tipo === "pagados") {
-    filtrados = datosGlobales.filter(d => {
-      const total = (d.efectivo || 0) + (d.deposito || 0);
-      return total >= 10000;
-    });
-  }
+  if (tipo === "pendientes") filtrados = datosGlobales.filter(d => {
+    const total = (d.efectivo || 0) + (d.deposito || 0);
+    return total >= 0 && total < 5000;
+  });
+  if (tipo === "parciales") filtrados = datosGlobales.filter(d => {
+    const total = (d.efectivo || 0) + (d.deposito || 0);
+    return total >= 5000 && total <= 9900;
+  });
+  if (tipo === "pagados") filtrados = datosGlobales.filter(d => {
+    const total = (d.efectivo || 0) + (d.deposito || 0);
+    return total >= 10000;
+  });
 
   render(filtrados);
 }
 
 // FORMATO MONEDA
-const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+const formato = n => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
-// DATOS DESDE FIRESTORE
-onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+// CARGAR DATOS FIRESTORE
+db.collection("cooperaciones").onSnapshot(snapshot => {
   datosGlobales = [];
   snapshot.forEach(doc => datosGlobales.push(doc.data()));
   render(datosGlobales);
@@ -121,7 +118,7 @@ onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
 
 // RENDER LISTA
 function render(datos) {
-  datosFiltradosActuales = datos; // Guardamos lo que se está mostrando
+  datosFiltradosActuales = datos;
   lista.innerHTML = "";
 
   let totalC = 0, totalE = 0, totalD = 0;
@@ -170,7 +167,7 @@ function render(datos) {
   });
 }
 
-// BUSCADOR POR NOMBRE
+// BUSCADOR
 document.getElementById("buscador").addEventListener("keyup", e => {
   const texto = e.target.value.toLowerCase();
   const filtrados = datosGlobales.filter(d =>
@@ -215,7 +212,7 @@ function exportarPDF() {
 
     doc.text(`${d.nombre} | Coop: ${coop} | Efectivo: ${efec} | Dep: ${dep} | Total: ${total} | ${estado}`, 10, y);
     y += 10;
-    if(y > 280){ doc.addPage(); y = 10; } // salto de página si es necesario
+    if(y > 280){ doc.addPage(); y = 10; }
   });
 
   doc.save("cooperaciones.pdf");
