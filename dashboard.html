@@ -256,9 +256,23 @@ function exportarPDF() {
     styles: { fontSize: 10 }
   });
 
-  // Total de cooperaciones al final del PDF
-  const totalC = datosFiltradosActuales.reduce((suma, d) => suma + (d.cooperacion || 0), 0);
-  doc.text(`Total de Cooperaciones: ${totalC.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`, 14, doc.lastAutoTable.finalY + 10);
+  // Calcular totales
+  const totalE = datosFiltradosActuales.reduce((s, d) => s + (d.efectivo || 0), 0);
+  const totalD = datosFiltradosActuales.reduce((s, d) => s + (d.deposito || 0), 0);
+  const totalGeneral = totalE + totalD;
+  const totalC = datosFiltradosActuales.reduce((s, d) => s + (d.cooperacion || 0), 0);
+  const faltante = meta - totalGeneral;
+
+  // Mostrar totales al final del PDF
+  let yPos = doc.lastAutoTable.finalY + 10;
+  doc.setFontSize(12);
+  doc.text(`Total: ${totalGeneral.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })} (Efectivo y Depósito)`, 14, yPos);
+  yPos += 7;
+  doc.text(`Meta: ${meta.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`, 14, yPos);
+  yPos += 7;
+  doc.text(`Faltante: ${faltante.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`, 14, yPos);
+  yPos += 7;
+  doc.text(`Cooperaciones: ${totalC.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`, 14, yPos);
 
   doc.save(`cooperaciones_${fechaStr.replace(/[\/,: ]/g,'_')}.pdf`);
 }
