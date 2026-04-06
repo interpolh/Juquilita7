@@ -10,100 +10,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #eef2f7;
-  margin: 0;
-}
-
-/* HEADER */
-header {
-  background: #2c3e50;
-  color: white;
-  padding: 15px;
-  text-align: center;
-  font-size: 20px;
-}
-
-/* CONTENEDOR */
-.container {
-  padding: 15px;
-}
-
-/* TARJETAS */
-.card {
-  background: white;
-  border-radius: 15px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-}
-
-/* INPUT */
-input {
-  padding: 12px;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-}
-
-/* BOTONES */
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #3498db;
-  color: white;
-  margin: 5px;
-}
-
-/* LISTA TIPO APP */
-.persona {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-}
-
-.nombre {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.monto {
-  font-size: 14px;
-  color: #555;
-}
-
-/* PROGRESO */
-.progreso {
-  background: #ddd;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.barra {
-  height: 25px;
-  background: green;
-  color: white;
-  text-align: center;
-}
-
-/* BOTÓN FLOTANTE */
-.btn-menu {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #2c3e50;
-  color: white;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  font-size: 20px;
-}
-
+body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; }
+header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 20px; }
+.container { padding: 15px; }
+.card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+input { padding: 12px; width: 100%; border-radius: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
+button { padding: 10px; border: none; border-radius: 10px; background: #3498db; color: white; margin: 5px; }
+.persona { background: white; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0px 2px 8px rgba(0,0,0,0.1); }
+.nombre { font-weight: bold; font-size: 16px; }
+.monto { font-size: 14px; color: #555; }
+.progreso { background: #ddd; border-radius: 20px; overflow: hidden; }
+.barra { height: 25px; background: green; color: white; text-align: center; }
+.btn-menu { position: fixed; bottom: 20px; right: 20px; background: #2c3e50; color: white; border-radius: 50%; width: 55px; height: 55px; font-size: 20px; }
 </style>
 </head>
 
@@ -117,16 +35,15 @@ button {
 <button onclick="filtrar('todos')">Todos</button>
 <button onclick="filtrar('pagados')">🟢 Pagados</button>
 <button onclick="filtrar('parciales')">🟡 Parciales</button>
-<button onclick="filtrar('pendientes')">🔴 Pendientes</button></div>
+<button onclick="filtrar('pendientes')">🔴 Pendientes</button>
+</div>
 
 <div class="card">
 <input type="text" id="buscador" placeholder="🔍 Buscar...">
-
 <button onclick="exportarExcel()">📥 Excel</button>
 <button onclick="exportarPDF()">📄 PDF</button>
 </div>
 
-<!-- LISTA -->
 <div id="lista"></div>
 
 <div class="card">
@@ -149,7 +66,6 @@ button {
 <button onclick="window.location.href='index.html'" class="btn-menu">🏠</button>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
@@ -164,10 +80,8 @@ const db = getFirestore(app);
 
 const lista = document.getElementById("lista");
 const meta = 661154.46;
-
 let datosGlobales = [];
 let chart;
-
 
 window.filtrar = function(tipo) {
   let filtrados = [];
@@ -177,29 +91,27 @@ window.filtrar = function(tipo) {
   }
 
   if (tipo === "pagados") {
-    // Total mayor o igual a la cooperacion
-    filtrados = datosGlobales.filter(d =>
-      (d.efectivo + d.deposito) >= d.cooperacion && d.cooperacion > 0
-    );
+    filtrados = datosGlobales.filter(d => {
+      const coop = d.cooperacion || 0;
+      const total = (d.efectivo || 0) + (d.deposito || 0);
+      return total >= coop && coop > 0;
+    });
   }
 
   if (tipo === "parciales") {
-    // Total mayor a 0 pero menor que la cooperacion
-    filtrados = datosGlobales.filter(d =>
-      (d.efectivo + d.deposito) > 0 &&
-      (d.efectivo + d.deposito) < d.cooperacion
-    );
+    filtrados = datosGlobales.filter(d => {
+      const coop = d.cooperacion || 0;
+      const total = (d.efectivo || 0) + (d.deposito || 0);
+      return total > 0 && total < coop;
+    });
   }
 
   if (tipo === "pendientes") {
-    // Total = 0
-    filtrados = datosGlobales.filter(d =>
-      (d.efectivo + d.deposito) === 0
-    );
+    filtrados = datosGlobales.filter(d => {
+      const total = (d.efectivo || 0) + (d.deposito || 0);
+      return total === 0;
+    });
   }
-
-  render(filtrados);
-}
 
   render(filtrados);
 }
@@ -208,22 +120,16 @@ const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 
 
 onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
   datosGlobales = [];
-
-  snapshot.forEach(doc => {
-    datosGlobales.push(doc.data());
-  });
-
+  snapshot.forEach(doc => datosGlobales.push(doc.data()));
   render(datosGlobales);
 });
 
 function render(datos) {
-
   lista.innerHTML = "";
 
   let totalC = 0, totalE = 0, totalD = 0;
 
   datos.forEach(d => {
-
     const coop = d.cooperacion || 0;
     const efec = d.efectivo || 0;
     const dep = d.deposito || 0;
@@ -250,9 +156,7 @@ function render(datos) {
         <div class="monto">Efectivo: ${formato(efec)}</div>
         <div class="monto">Depósito: ${formato(dep)}</div>
         <div class="monto"><strong>Total: ${formato(total)}</strong></div>
-        <div style="margin-top:5px;font-weight:bold;color:${color}">
-          ${estado}
-        </div>
+        <div style="margin-top:5px;font-weight:bold;color:${color}">${estado}</div>
       </div>
     `;
 
@@ -286,7 +190,6 @@ function render(datos) {
   });
 }
 
-
 // BUSCADOR
 document.getElementById("buscador").addEventListener("keyup", e => {
   const texto = e.target.value.toLowerCase();
@@ -295,7 +198,6 @@ document.getElementById("buscador").addEventListener("keyup", e => {
   );
   render(filtrados);
 });
-
 </script>
 
 <script>
