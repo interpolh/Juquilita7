@@ -117,11 +117,13 @@ import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_DOMINIO",
-  projectId: "TU_PROYECTO",
+  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
+  authDomain: "cooperaciones-juquilita.firebaseapp.com",
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
