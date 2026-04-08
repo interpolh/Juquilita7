@@ -10,33 +10,65 @@
 <link rel="manifest" href="manifest.json">
 
 <style>
-body { font-family: Arial; background: #eef2f7; padding: 20px; }
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 20px;
+}
+
 h2 { text-align: center; }
 
-.card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
 
-input { padding: 8px; margin: 5px; width: 95%; }
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 95%;
+}
 
-button { padding: 8px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; }
+button {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 .guardar { background: #27ae60; color: white; }
 .cancelar { background: #e74c3c; color: white; }
 .editar { background: #3498db; color: white; }
 .eliminar { background: #c0392b; color: white; }
 
-table { width: 100%; border-collapse: collapse; background: white; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
 
-th { background: #2c3e50; color: white; }
+th {
+  background: #2c3e50;
+  color: white;
+}
 
-td, th { padding: 8px; text-align: center; }
+td, th {
+  padding: 8px;
+  text-align: center;
+}
 
-tr:nth-child(even) { background: #f2f2f2; }
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- 🔐 LOGIN -->
 <div id="login" class="card">
   <h3>🔐 Acceso Administrador</h3>
   <input type="email" id="email" placeholder="Correo">
@@ -44,16 +76,17 @@ tr:nth-child(even) { background: #f2f2f2; }
   <button onclick="login()">Entrar</button>
 </div>
 
-<!-- CONTENIDO -->
+<!-- 🔒 CONTENIDO -->
 <div id="contenido" style="display:none;">
 
 <h2>Panel Administrador</h2>
+
 <button onclick="logout()">Cerrar sesión</button>
 
-<!-- FORM -->
 <div class="card">
 <form id="formulario">
   <input type="hidden" id="docId">
+
   <input type="text" id="nombre" placeholder="Nombre" required>
   <input type="number" id="cooperacion" placeholder="Cooperación">
   <input type="number" id="efectivo" placeholder="Efectivo">
@@ -64,12 +97,10 @@ tr:nth-child(even) { background: #f2f2f2; }
 </form>
 </div>
 
-<!-- BUSCADOR -->
 <div class="card">
 <input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
 </div>
 
-<!-- TABLA -->
 <div class="card">
 <table>
 <thead>
@@ -86,29 +117,6 @@ tr:nth-child(even) { background: #f2f2f2; }
 </table>
 </div>
 
-<!-- 💸 GASTOS -->
-<div class="card">
-  <h3>💸 Registrar Gasto / Retiro</h3>
-  <input type="text" id="descGasto" placeholder="Descripción">
-  <input type="number" id="montoGasto" placeholder="Monto">
-  <button onclick="guardarGasto()" class="guardar">Guardar gasto</button>
-</div>
-
-<div class="card">
-  <h3>📋 Lista de Gastos</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Descripción</th>
-        <th>Monto</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody id="tablaGastos"></tbody>
-  </table>
-</div>
-
-<!-- TOTALES -->
 <div class="card">
 <h3 id="totales"></h3>
 </div>
@@ -117,9 +125,17 @@ tr:nth-child(even) { background: #f2f2f2; }
 
 <script type="module">
 
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+import { 
+  getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs 
+} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+import { 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
@@ -134,116 +150,106 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAIL = "interpolhtehuacan@gmail.com";
 
-// LOGIN
+// 👑 SOLO ESTE CORREO PUEDE ENTRAR
+const ADMIN_EMAIL = "interpolhtehuacan@gmail.com"; // 🔥 CAMBIA ESTO
+
+// 🔐 LOGIN
 window.login = function() {
   const email = document.getElementById("email").value;
   const pass = document.getElementById("password").value;
 
   signInWithEmailAndPassword(auth, email, pass)
     .catch(() => alert("Datos incorrectos"));
-};
+}
 
-// VALIDACIÓN
+// 👑 VALIDAR ADMIN
 onAuthStateChanged(auth, user => {
+
   if (user && user.email === ADMIN_EMAIL) {
-    login.style.display = "none";
-    contenido.style.display = "block";
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("contenido").style.display = "block";
+
   } else {
-    contenido.style.display = "none";
-    login.style.display = "block";
+
+    if (user) {
+      alert("No tienes acceso");
+      signOut(auth);
+    }
+
+    document.getElementById("login").style.display = "block";
+    document.getElementById("contenido").style.display = "none";
   }
+
 });
 
-window.logout = () => signOut(auth);
+// 🚪 LOGOUT
+window.logout = function() {
+  signOut(auth);
+}
 
-// VARIABLES
-const formato = n => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+// 📊 SISTEMA (TU CÓDIGO ORIGINAL)
+const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+
 const tabla = document.getElementById("tabla");
-const tablaGastos = document.getElementById("tablaGastos");
-
 let datosGlobales = [];
-let gastosGlobal = 0;
 
-// GUARDAR COOPERACIÓN
-formulario.addEventListener("submit", async e => {
+// GUARDAR / EDITAR
+document.getElementById("formulario").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const id = docId.value;
+  const id = document.getElementById("docId").value;
   const nombre = document.getElementById("nombre").value.trim();
 
-  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
-  const snap = await getDocs(q);
+  if (!nombre) return alert("El nombre es obligatorio");
 
-  if (!snap.empty && !id) return alert("Nombre duplicado");
+  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty && !id) {
+    return alert("Ese nombre ya existe");
+  }
 
   const datos = {
     nombre,
-    cooperacion: Number(cooperacion.value) || 0,
-    efectivo: Number(efectivo.value) || 0,
-    deposito: Number(deposito.value) || 0
+    cooperacion: Number(document.getElementById("cooperacion").value) || 0,
+    efectivo: Number(document.getElementById("efectivo").value) || 0,
+    deposito: Number(document.getElementById("deposito").value) || 0
   };
 
   if (id) {
     await updateDoc(doc(db, "cooperaciones", id), datos);
+    alert("Actualizado");
   } else {
     await addDoc(collection(db, "cooperaciones"), datos);
+    alert("Guardado");
   }
 
-  formulario.reset();
-  docId.value = "";
+  cancelarEdicion();
 });
 
-// LEER COOPERACIONES
-onSnapshot(collection(db, "cooperaciones"), snap => {
-  datosGlobales = [];
-  snap.forEach(d => datosGlobales.push({ id: d.id, ...d.data() }));
-  renderTabla(datosGlobales);
-});
-
-// GUARDAR GASTO
-window.guardarGasto = async () => {
-  const desc = document.getElementById("descGasto").value;
-  const monto = Number(document.getElementById("montoGasto").value) || 0;
-
-  if (!desc || monto <= 0) return alert("Completa datos");
-
-  await addDoc(collection(db, "gastos"), { descripcion: desc, monto });
-
-  descGasto.value = "";
-  montoGasto.value = "";
+// CANCELAR
+window.cancelarEdicion = () => {
+  document.getElementById("formulario").reset();
+  document.getElementById("docId").value = "";
 };
 
-// LEER GASTOS
-onSnapshot(collection(db, "gastos"), snap => {
-  tablaGastos.innerHTML = "";
-  gastosGlobal = 0;
+// MOSTRAR
+onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+  datosGlobales = [];
 
-  snap.forEach(d => {
-    const g = d.data();
-    gastosGlobal += g.monto || 0;
-
-    tablaGastos.innerHTML += `
-      <tr>
-        <td>${g.descripcion}</td>
-        <td>${formato(g.monto)}</td>
-        <td><button class="eliminar" onclick="eliminarGasto('${d.id}')">Eliminar</button></td>
-      </tr>
-    `;
+  snapshot.forEach(docSnap => {
+    datosGlobales.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
   });
 
   renderTabla(datosGlobales);
 });
 
-// ELIMINAR GASTO
-window.eliminarGasto = async id => {
-  if (confirm("¿Eliminar gasto?")) {
-    await deleteDoc(doc(db, "gastos", id));
-  }
-};
-
-// RENDER
+// TABLA
 function renderTabla(lista) {
   tabla.innerHTML = "";
 
@@ -260,7 +266,7 @@ function renderTabla(lista) {
         <td>${formato(d.deposito)}</td>
         <td><strong>${formato(total)}</strong></td>
         <td>
-          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito)">Editar</button>
+          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito})">Editar</button>
           <button class="eliminar" onclick="eliminar('${d.id}')">Eliminar</button>
         </td>
       </tr>
@@ -271,34 +277,45 @@ function renderTabla(lista) {
     totalD += d.deposito || 0;
   });
 
-  const bruto = totalC + totalE + totalD;
-  const neto = bruto - gastosGlobal;
-
   document.getElementById("totales").innerHTML = `
     Total Cooperación: ${formato(totalC)} <br>
     Total Efectivo: ${formato(totalE)} <br>
     Total Depósito: ${formato(totalD)} <br>
-    💸 Gastos: ${formato(gastosGlobal)} <br>
-    <strong>Total Neto: ${formato(neto)}</strong>
+    <strong>Total General: ${formato(totalC + totalE + totalD)}</strong>
   `;
 }
 
+// BUSCAR
+document.getElementById("buscador").addEventListener("keyup", (e) => {
+  const texto = e.target.value.toLowerCase();
+  const filtrados = datosGlobales.filter(d =>
+    d.nombre.toLowerCase().includes(texto)
+  );
+  renderTabla(filtrados);
+});
+
 // EDITAR
 window.editar = (id, nombre, coop, efec, dep) => {
-  docId.value = id;
+  document.getElementById("docId").value = id;
   document.getElementById("nombre").value = nombre;
-  cooperacion.value = coop;
-  efectivo.value = efec;
-  deposito.value = dep;
+  document.getElementById("cooperacion").value = coop;
+  document.getElementById("efectivo").value = efec;
+  document.getElementById("deposito").value = dep;
 };
 
 // ELIMINAR
-window.eliminar = async id => {
+window.eliminar = async (id) => {
   if (confirm("¿Eliminar registro?")) {
     await deleteDoc(doc(db, "cooperaciones", id));
   }
 };
 
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
 </script>
 
 </body>
