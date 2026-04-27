@@ -3,19 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <title>ADMIN - Cooperaciones</title>
 
+<link rel="manifest" href="manifest.json">
+
 <style>
-body { font-family: Arial; background:#eef2f7; padding:20px; }
-.card { background:white; padding:15px; border-radius:10px; margin-bottom:20px; }
-button { padding:8px; margin:5px; border:none; border-radius:6px; cursor:pointer; }
-.guardar{background:#27ae60;color:white;}
+body {
+  font-family: Arial;
+  background: #eef2f7;
+  padding: 20px;
+}
+
+h2 { text-align: center; }
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 95%;
+}
+
+button {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.guardar { background: #27ae60; color: white; }
+.cancelar { background: #e74c3c; color: white; }
+.editar { background: #3498db; color: white; }
+.eliminar { background: #c0392b; color: white; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+}
+
+td, th {
+  padding: 8px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: #f2f2f2;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- 🔐 LOGIN -->
 <div id="login" class="card">
   <h3>🔐 Acceso Administrador</h3>
   <input type="email" id="email" placeholder="Correo">
@@ -23,44 +76,41 @@ button { padding:8px; margin:5px; border:none; border-radius:6px; cursor:pointer
   <button onclick="login()">Entrar</button>
 </div>
 
-<!-- CONTENIDO -->
+<!-- 🔒 CONTENIDO -->
 <div id="contenido" style="display:none;">
 
 <h2>Panel Administrador</h2>
+
 <button onclick="logout()">Cerrar sesión</button>
 
-<!-- RETIROS -->
-<div class="card">
-  <button onclick="mostrarRetiro()">💸 Registrar Retiro</button>
-
-  <div id="formRetiro" style="display:none;">
-    <input type="number" id="montoRetiro" placeholder="Monto">
-    <input type="text" id="motivoRetiro" placeholder="Motivo">
-    <button onclick="guardarRetiro()" class="guardar">Guardar</button>
-  </div>
-</div>
-
-<!-- FORMULARIO -->
 <div class="card">
 <form id="formulario">
   <input type="hidden" id="docId">
+
   <input type="text" id="nombre" placeholder="Nombre" required>
   <input type="number" id="cooperacion" placeholder="Cooperación">
   <input type="number" id="efectivo" placeholder="Efectivo">
   <input type="number" id="deposito" placeholder="Depósito">
+
   <button type="submit" class="guardar">Guardar</button>
+  <button type="button" onclick="cancelarEdicion()" class="cancelar">Cancelar</button>
 </form>
 </div>
 
-<!-- TABLA -->
 <div class="card">
-<table border="1" width="100%">
+<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
+</div>
+
+<div class="card">
+<table>
 <thead>
 <tr>
 <th>Nombre</th>
+<th>Coop</th>
 <th>Efectivo</th>
 <th>Depósito</th>
 <th>Total</th>
+<th>Acciones</th>
 </tr>
 </thead>
 <tbody id="tabla"></tbody>
@@ -75,108 +125,198 @@ button { padding:8px; margin:5px; border:none; border-radius:6px; cursor:pointer
 
 <script type="module">
 
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+import { 
+  getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs 
+} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+import { 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
   authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita"
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const ADMIN_EMAIL = "interpolhtehuacan@gmail.com";
 
-window.login = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(()=>alert("Error"));
-};
+// 👑 SOLO ESTE CORREO PUEDE ENTRAR
+const ADMIN_EMAIL = "interpolhtehuacan@gmail.com"; // 🔥 CAMBIA ESTO
 
-onAuthStateChanged(auth, user=>{
-  if(user && user.email===ADMIN_EMAIL){
-    login.style.display="none";
-    contenido.style.display="block";
+// 🔐 LOGIN
+window.login = function() {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .catch(() => alert("Datos incorrectos"));
+}
+
+// 👑 VALIDAR ADMIN
+onAuthStateChanged(auth, user => {
+
+  if (user && user.email === ADMIN_EMAIL) {
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("contenido").style.display = "block";
+
+  } else {
+
+    if (user) {
+      alert("No tienes acceso");
+      signOut(auth);
+    }
+
+    document.getElementById("login").style.display = "block";
+    document.getElementById("contenido").style.display = "none";
   }
+
 });
 
-window.logout = ()=>signOut(auth);
+// 🚪 LOGOUT
+window.logout = function() {
+  signOut(auth);
+}
 
-// FORMULARIO
-formulario.addEventListener("submit", async e=>{
+// 📊 SISTEMA (TU CÓDIGO ORIGINAL)
+const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
+
+const tabla = document.getElementById("tabla");
+let datosGlobales = [];
+
+// GUARDAR / EDITAR
+document.getElementById("formulario").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  await addDoc(collection(db,"cooperaciones"),{
-    nombre:nombre.value,
-    efectivo:Number(efectivo.value)||0,
-    deposito:Number(deposito.value)||0
-  });
+  const id = document.getElementById("docId").value;
+  const nombre = document.getElementById("nombre").value.trim();
 
-  formulario.reset();
+  if (!nombre) return alert("El nombre es obligatorio");
+
+  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty && !id) {
+    return alert("Ese nombre ya existe");
+  }
+
+  const datos = {
+    nombre,
+    cooperacion: Number(document.getElementById("cooperacion").value) || 0,
+    efectivo: Number(document.getElementById("efectivo").value) || 0,
+    deposito: Number(document.getElementById("deposito").value) || 0
+  };
+
+  if (id) {
+    await updateDoc(doc(db, "cooperaciones", id), datos);
+    alert("Actualizado");
+  } else {
+    await addDoc(collection(db, "cooperaciones"), datos);
+    alert("Guardado");
+  }
+
+  cancelarEdicion();
 });
 
-// RETIROS
-let totalRetiros = 0;
-
-window.mostrarRetiro = ()=>{
-  formRetiro.style.display = formRetiro.style.display==="none"?"block":"none";
+// CANCELAR
+window.cancelarEdicion = () => {
+  document.getElementById("formulario").reset();
+  document.getElementById("docId").value = "";
 };
 
-window.guardarRetiro = async ()=>{
-  await addDoc(collection(db,"retiros"),{
-    monto:Number(montoRetiro.value)||0,
-    motivo:motivoRetiro.value,
-    fecha:new Date()
+// MOSTRAR
+onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
+  datosGlobales = [];
+
+  snapshot.forEach(docSnap => {
+    datosGlobales.push({
+      id: docSnap.id,
+      ...docSnap.data()
+    });
   });
 
-  montoRetiro.value="";
-  motivoRetiro.value="";
-};
-
-// DATOS
-let datosGlobales=[];
-
-onSnapshot(collection(db,"cooperaciones"),snap=>{
-  datosGlobales=[];
-  snap.forEach(d=>datosGlobales.push(d.data()));
-  render();
+  renderTabla(datosGlobales);
 });
 
-onSnapshot(collection(db,"retiros"),snap=>{
-  totalRetiros=0;
-  snap.forEach(d=>totalRetiros+=d.data().monto||0);
-  render();
-});
+// TABLA
+function renderTabla(lista) {
+  tabla.innerHTML = "";
 
-function render(){
-  tabla.innerHTML="";
-  let totalE=0,totalD=0;
+  let totalC = 0, totalE = 0, totalD = 0;
 
-  datosGlobales.forEach(d=>{
-    const total=(d.efectivo||0)+(d.deposito||0);
-    tabla.innerHTML+=`
-    <tr>
-      <td>${d.nombre}</td>
-      <td>${d.efectivo}</td>
-      <td>${d.deposito}</td>
-      <td>${total}</td>
-    </tr>`;
-    totalE+=d.efectivo||0;
-    totalD+=d.deposito||0;
+  lista.forEach(d => {
+    const total = (d.cooperacion || 0) + (d.efectivo || 0) + (d.deposito || 0);
+
+    tabla.innerHTML += `
+      <tr>
+        <td>${d.nombre}</td>
+        <td>${formato(d.cooperacion)}</td>
+        <td>${formato(d.efectivo)}</td>
+        <td>${formato(d.deposito)}</td>
+        <td><strong>${formato(total)}</strong></td>
+        <td>
+          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito})">Editar</button>
+          <button class="eliminar" onclick="eliminar('${d.id}')">Eliminar</button>
+        </td>
+      </tr>
+    `;
+
+    totalC += d.cooperacion || 0;
+    totalE += d.efectivo || 0;
+    totalD += d.deposito || 0;
   });
 
-  const caja=(totalE+totalD)-totalRetiros;
-
-  totales.innerHTML=`
-    Ingresos: ${totalE+totalD}<br>
-    Retiros: ${totalRetiros}<br>
-    <strong>Caja: ${caja}</strong>
+  document.getElementById("totales").innerHTML = `
+    Total Cooperación: ${formato(totalC)} <br>
+    Total Efectivo: ${formato(totalE)} <br>
+    Total Depósito: ${formato(totalD)} <br>
+    <strong>Total General: ${formato(totalC + totalE + totalD)}</strong>
   `;
 }
 
+// BUSCAR
+document.getElementById("buscador").addEventListener("keyup", (e) => {
+  const texto = e.target.value.toLowerCase();
+  const filtrados = datosGlobales.filter(d =>
+    d.nombre.toLowerCase().includes(texto)
+  );
+  renderTabla(filtrados);
+});
+
+// EDITAR
+window.editar = (id, nombre, coop, efec, dep) => {
+  document.getElementById("docId").value = id;
+  document.getElementById("nombre").value = nombre;
+  document.getElementById("cooperacion").value = coop;
+  document.getElementById("efectivo").value = efec;
+  document.getElementById("deposito").value = dep;
+};
+
+// ELIMINAR
+window.eliminar = async (id) => {
+  if (confirm("¿Eliminar registro?")) {
+    await deleteDoc(doc(db, "cooperaciones", id));
+  }
+};
+
 </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
+
 </body>
 </html>
