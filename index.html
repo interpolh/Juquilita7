@@ -2,71 +2,184 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Juquilita sección 7</title>
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="icono.png">
+<title>ADMIN - Cooperaciones</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #2c3e50;
-  color: white;
-  text-align: center;
-  margin: 0;
-}
-
-h1 {
-  margin-top: 40px;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 30px;
-}
-
-.boton {
-  background: #3498db;
-  padding: 20px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: white;
-  font-size: 18px;
-}
-
-.boton:hover {
-  background: #2980b9;
-}
+body { font-family: Arial; background:#eef2f7; padding:20px; }
+.card { background:white; padding:15px; border-radius:10px; margin-bottom:20px; }
+button { padding:8px; margin:5px; border:none; border-radius:6px; cursor:pointer; }
+.guardar{background:#27ae60;color:white;}
 </style>
-  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-<h1> Colonia Juquilita Sección 7</h1>
-
-<div class="menu">
-  <a href="dashboard.html" class="boton">📊 COOPERACIONES</a>
-  <a href="Depositos.html" class="boton">📄 DEPOSITOS</a>
-  <a href="Proyecto.html" class="boton">📄 PROYECTO</a>
-  <a href="gastos.html" class="boton">📄 GASTOS</a>
-  <a href="index2.html" class="boton">📄 COMITE</a>
- <a>
-      <H3> INTERPOLH TEHUACAN </H3></a>
-  copyright (©) 
-
-  
+<!-- LOGIN -->
+<div id="login" class="card">
+  <h3>🔐 Acceso Administrador</h3>
+  <input type="email" id="email" placeholder="Correo">
+  <input type="password" id="password" placeholder="Contraseña">
+  <button onclick="login()">Entrar</button>
 </div>
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
+
+<!-- CONTENIDO -->
+<div id="contenido" style="display:none;">
+
+<h2>Panel Administrador</h2>
+<button onclick="logout()">Cerrar sesión</button>
+
+<!-- RETIROS -->
+<div class="card">
+  <button onclick="mostrarRetiro()">💸 Registrar Retiro</button>
+
+  <div id="formRetiro" style="display:none;">
+    <input type="number" id="montoRetiro" placeholder="Monto">
+    <input type="text" id="motivoRetiro" placeholder="Motivo">
+    <button onclick="guardarRetiro()" class="guardar">Guardar</button>
+  </div>
+</div>
+
+<!-- FORMULARIO -->
+<div class="card">
+<form id="formulario">
+  <input type="hidden" id="docId">
+  <input type="text" id="nombre" placeholder="Nombre" required>
+  <input type="number" id="cooperacion" placeholder="Cooperación">
+  <input type="number" id="efectivo" placeholder="Efectivo">
+  <input type="number" id="deposito" placeholder="Depósito">
+  <button type="submit" class="guardar">Guardar</button>
+</form>
+</div>
+
+<!-- TABLA -->
+<div class="card">
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Efectivo</th>
+<th>Depósito</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3 id="totales"></h3>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
+  authDomain: "cooperaciones-juquilita.firebaseapp.com",
+  projectId: "cooperaciones-juquilita",
+  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
+  messagingSenderId: "836131757319",
+  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const ADMIN_EMAIL = "interpolhtehuacan@gmail.com";
+
+window.login = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .catch(()=>alert("Error"));
+};
+
+onAuthStateChanged(auth, user=>{
+  if(user && user.email===ADMIN_EMAIL){
+    login.style.display="none";
+    contenido.style.display="block";
+  }
+});
+
+window.logout = ()=>signOut(auth);
+
+// FORMULARIO
+formulario.addEventListener("submit", async e=>{
+  e.preventDefault();
+
+  await addDoc(collection(db,"cooperaciones"),{
+    nombre:nombre.value,
+    efectivo:Number(efectivo.value)||0,
+    deposito:Number(deposito.value)||0
+  });
+
+  formulario.reset();
+});
+
+// RETIROS
+let totalRetiros = 0;
+
+window.mostrarRetiro = ()=>{
+  formRetiro.style.display = formRetiro.style.display==="none"?"block":"none";
+};
+
+window.guardarRetiro = async ()=>{
+  await addDoc(collection(db,"retiros"),{
+    monto:Number(montoRetiro.value)||0,
+    motivo:motivoRetiro.value,
+    fecha:new Date()
+  });
+
+  montoRetiro.value="";
+  motivoRetiro.value="";
+};
+
+// DATOS
+let datosGlobales=[];
+
+onSnapshot(collection(db,"cooperaciones"),snap=>{
+  datosGlobales=[];
+  snap.forEach(d=>datosGlobales.push(d.data()));
+  render();
+});
+
+onSnapshot(collection(db,"retiros"),snap=>{
+  totalRetiros=0;
+  snap.forEach(d=>totalRetiros+=d.data().monto||0);
+  render();
+});
+
+function render(){
+  tabla.innerHTML="";
+  let totalE=0,totalD=0;
+
+  datosGlobales.forEach(d=>{
+    const total=(d.efectivo||0)+(d.deposito||0);
+    tabla.innerHTML+=`
+    <tr>
+      <td>${d.nombre}</td>
+      <td>${d.efectivo}</td>
+      <td>${d.deposito}</td>
+      <td>${total}</td>
+    </tr>`;
+    totalE+=d.efectivo||0;
+    totalD+=d.deposito||0;
+  });
+
+  const caja=(totalE+totalD)-totalRetiros;
+
+  totales.innerHTML=`
+    Ingresos: ${totalE+totalD}<br>
+    Retiros: ${totalRetiros}<br>
+    <strong>Caja: ${caja}</strong>
+  `;
 }
+
 </script>
 </body>
 </html>
