@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juquilita App</title>
+<title>Juquilita Sección 7</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -12,117 +12,48 @@
 body{
     margin:0;
     font-family:'Poppins', sans-serif;
-    background:#eef2f7;
+    background:#f4f6f9;
 }
 
-/* HEADER APP */
-.header{
-    background:linear-gradient(135deg,#1e3c72,#2a5298);
+/* HEADER */
+header{
+    background:linear-gradient(135deg,#2c3e50,#3498db);
     color:white;
-    padding:20px;
-    border-bottom-left-radius:25px;
-    border-bottom-right-radius:25px;
-}
-
-.header h2{
-    margin:0;
-    font-size:18px;
-}
-
-.header p{
-    margin:5px 0 0;
-    font-size:13px;
-    opacity:0.8;
-}
-
-/* TARJETA SALDO */
-.balance{
-    background:white;
-    margin: -30px 20px 20px;
-    padding:20px;
-    border-radius:20px;
-    box-shadow:0 10px 20px rgba(0,0,0,0.1);
-}
-
-.balance h3{
-    margin:0;
-    font-size:14px;
-    color:#888;
-}
-
-.balance h1{
-    margin:5px 0 0;
-    color:#2a5298;
-}
-
-/* ACCIONES */
-.actions{
-    display:flex;
-    justify-content:space-around;
-    margin:20px;
-}
-
-.action{
-    background:white;
     padding:15px;
-    border-radius:15px;
     text-align:center;
-    width:70px;
-    box-shadow:0 5px 10px rgba(0,0,0,0.1);
-    cursor:pointer;
-    transition:0.3s;
+    font-size:16px;
 }
 
-.action:active{
-    transform:scale(0.9);
-}
-
-.action i{
-    font-size:20px;
-    color:#2a5298;
-}
-
-/* LISTA */
-.list{
+/* CONTENIDO */
+.container{
     padding:20px;
+    padding-bottom:80px; /* espacio para menú */
 }
 
-.item{
+/* TARJETAS */
+.card{
     background:white;
-    padding:15px;
+    padding:20px;
+    margin-bottom:15px;
     border-radius:15px;
-    margin-bottom:10px;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    box-shadow:0 5px 10px rgba(0,0,0,0.08);
-}
-
-/* BOTÓN FLOTANTE */
-.fab{
-    position:fixed;
-    bottom:80px;
-    right:20px;
-    background:#2a5298;
-    color:white;
-    width:55px;
-    height:55px;
-    border-radius:50%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:22px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.3);
-    cursor:pointer;
+    gap:15px;
     transition:0.3s;
 }
 
-.fab:active{
-    transform:scale(0.9);
+.card:active{
+    transform:scale(0.97);
+}
+
+.card i{
+    font-size:22px;
+    color:#3498db;
 }
 
 /* MENÚ INFERIOR */
-.nav{
+.bottom-nav{
     position:fixed;
     bottom:0;
     width:100%;
@@ -133,87 +64,78 @@ body{
     box-shadow:0 -3px 10px rgba(0,0,0,0.1);
 }
 
-.nav a{
+.bottom-nav a{
     text-decoration:none;
-    color:#888;
+    color:#7f8c8d;
     font-size:12px;
     display:flex;
     flex-direction:column;
     align-items:center;
+    transition:0.3s;
 }
 
-.nav a i{
+.bottom-nav a i{
     font-size:20px;
+    margin-bottom:3px;
 }
 
-.nav a.active{
-    color:#2a5298;
+.bottom-nav a:hover,
+.bottom-nav a.active{
+    color:#3498db;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<div class="header">
-    <h2>COLONIA JUQUILITA SECCIÓN 7</h2>
-    <p>Control de Cooperaciones</p>
-</div>
+<header>
+    <strong>COLONIA JUQUILITA SECCIÓN 7</strong><br>
+    Control de Cooperaciones
+</header>
 
-<!-- SALDO -->
-<div class="balance">
-    <h3>Saldo total</h3>
-    <h1>$ 12,500</h1>
-</div>
+<div class="container">
 
-<!-- ACCIONES -->
-<div class="actions">
-    <div class="action" onclick="location.href='Depositos.html'">
-        <i class="fas fa-plus"></i>
-        <div>Agregar</div>
+    <div class="card" onclick="location.href='Depositos.html'">
+        <i class="fas fa-dollar-sign"></i>
+        <div>
+            <strong>Depósitos</strong><br>
+            Registro de cooperaciones
+        </div>
     </div>
 
-    <div class="action" onclick="location.href='gastos.html'">
-        <i class="fas fa-minus"></i>
-        <div>Gastos</div>
-    </div>
-
-    <div class="action" onclick="location.href='Proyecto.html'">
+    <div class="card" onclick="location.href='Proyecto.html'">
         <i class="fas fa-chart-line"></i>
-        <div>Proyectos</div>
+        <div>
+            <strong>Proyectos</strong><br>
+            Seguimiento de obras
+        </div>
     </div>
 
-    <div class="action" onclick="location.href='dashboard.html'">
+    <div class="card" onclick="location.href='gastos.html'">
+        <i class="fas fa-money-bill-wave"></i>
+        <div>
+            <strong>Gastos</strong><br>
+            Control de egresos
+        </div>
+    </div>
+
+    <div class="card" onclick="location.href='dashboard.html'">
         <i class="fas fa-chart-pie"></i>
-        <div>Resumen</div>
-    </div>
-</div>
-
-<!-- MOVIMIENTOS -->
-<div class="list">
-    <div class="item">
-        <span>Depósito Juan</span>
-        <strong>$200</strong>
+        <div>
+            <strong>Dashboard</strong><br>
+            Resumen general
+        </div>
     </div>
 
-    <div class="item">
-        <span>Compra material</span>
-        <strong>-$500</strong>
-    </div>
 </div>
 
-<!-- BOTÓN FLOTANTE -->
-<div class="fab" onclick="location.href='Depositos.html'">
-    <i class="fas fa-plus"></i>
-</div>
-
-<!-- MENÚ -->
-<div class="nav">
+<!-- MENÚ INFERIOR -->
+<div class="bottom-nav">
     <a href="dashboard.html"><i class="fas fa-home"></i>Inicio</a>
     <a href="Depositos.html"><i class="fas fa-dollar-sign"></i>Depósitos</a>
-    <a href="gastos.html"><i class="fas fa-wallet"></i>Gastos</a>
     <a href="Proyecto.html"><i class="fas fa-chart-line"></i>Proyectos</a>
-    <a href="index2.html"><i class="fas fa-bars"></i>Más</a>
+    <a href="gastos.html"><i class="fas fa-wallet"></i>Gastos</a>
+    <a href="index2.html"><i class="fas fa-file-alt"></i>Más</a>
 </div>
 
 </body>
