@@ -3,183 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN - Cooperaciones</title>
+<title>Juquilita App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-body { font-family: Arial; background:#eef2f7; padding:20px; }
-.card { background:white; padding:15px; border-radius:10px; margin-bottom:20px; }
-button { padding:8px; margin:5px; border:none; border-radius:6px; cursor:pointer; }
-.guardar{background:#27ae60;color:white;}
+body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background:#eef2f7;
+}
+
+/* HEADER APP */
+.header{
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    color:white;
+    padding:20px;
+    border-bottom-left-radius:25px;
+    border-bottom-right-radius:25px;
+}
+
+.header h2{
+    margin:0;
+    font-size:18px;
+}
+
+.header p{
+    margin:5px 0 0;
+    font-size:13px;
+    opacity:0.8;
+}
+
+/* TARJETA SALDO */
+.balance{
+    background:white;
+    margin: -30px 20px 20px;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+.balance h3{
+    margin:0;
+    font-size:14px;
+    color:#888;
+}
+
+.balance h1{
+    margin:5px 0 0;
+    color:#2a5298;
+}
+
+/* ACCIONES */
+.actions{
+    display:flex;
+    justify-content:space-around;
+    margin:20px;
+}
+
+.action{
+    background:white;
+    padding:15px;
+    border-radius:15px;
+    text-align:center;
+    width:70px;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.action:active{
+    transform:scale(0.9);
+}
+
+.action i{
+    font-size:20px;
+    color:#2a5298;
+}
+
+/* LISTA */
+.list{
+    padding:20px;
+}
+
+.item{
+    background:white;
+    padding:15px;
+    border-radius:15px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 5px 10px rgba(0,0,0,0.08);
+}
+
+/* BOTÓN FLOTANTE */
+.fab{
+    position:fixed;
+    bottom:80px;
+    right:20px;
+    background:#2a5298;
+    color:white;
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.fab:active{
+    transform:scale(0.9);
+}
+
+/* MENÚ INFERIOR */
+.nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    padding:10px 0;
+    box-shadow:0 -3px 10px rgba(0,0,0,0.1);
+}
+
+.nav a{
+    text-decoration:none;
+    color:#888;
+    font-size:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.nav a i{
+    font-size:20px;
+}
+
+.nav a.active{
+    color:#2a5298;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="card">
-  <h3>🔐 Acceso Administrador</h3>
-  <input type="email" id="email" placeholder="Correo">
-  <input type="password" id="password" placeholder="Contraseña">
-  <button onclick="login()">Entrar</button>
+<!-- HEADER -->
+<div class="header">
+    <h2>COLONIA JUQUILITA SECCIÓN 7</h2>
+    <p>Control de Cooperaciones</p>
 </div>
 
-<!-- CONTENIDO -->
-<div id="contenido" style="display:none;">
-
-<h2>Panel Administrador</h2>
-<button onclick="logout()">Cerrar sesión</button>
-
-<!-- RETIROS -->
-<div class="card">
-  <button onclick="mostrarRetiro()">💸 Registrar Retiro</button>
-
-  <div id="formRetiro" style="display:none;">
-    <input type="number" id="montoRetiro" placeholder="Monto">
-    <input type="text" id="motivoRetiro" placeholder="Motivo">
-    <button onclick="guardarRetiro()" class="guardar">Guardar</button>
-  </div>
+<!-- SALDO -->
+<div class="balance">
+    <h3>Saldo total</h3>
+    <h1>$ 12,500</h1>
 </div>
 
-<!-- FORMULARIO -->
-<div class="card">
-<form id="formulario">
-  <input type="hidden" id="docId">
-  <input type="text" id="nombre" placeholder="Nombre" required>
-  <input type="number" id="cooperacion" placeholder="Cooperación">
-  <input type="number" id="efectivo" placeholder="Efectivo">
-  <input type="number" id="deposito" placeholder="Depósito">
-  <button type="submit" class="guardar">Guardar</button>
-</form>
+<!-- ACCIONES -->
+<div class="actions">
+    <div class="action" onclick="location.href='Depositos.html'">
+        <i class="fas fa-plus"></i>
+        <div>Agregar</div>
+    </div>
+
+    <div class="action" onclick="location.href='gastos.html'">
+        <i class="fas fa-minus"></i>
+        <div>Gastos</div>
+    </div>
+
+    <div class="action" onclick="location.href='Proyecto.html'">
+        <i class="fas fa-chart-line"></i>
+        <div>Proyectos</div>
+    </div>
+
+    <div class="action" onclick="location.href='dashboard.html'">
+        <i class="fas fa-chart-pie"></i>
+        <div>Resumen</div>
+    </div>
 </div>
 
-<!-- TABLA -->
-<div class="card">
-<table border="1" width="100%">
-<thead>
-<tr>
-<th>Nombre</th>
-<th>Efectivo</th>
-<th>Depósito</th>
-<th>Total</th>
-</tr>
-</thead>
-<tbody id="tabla"></tbody>
-</table>
+<!-- MOVIMIENTOS -->
+<div class="list">
+    <div class="item">
+        <span>Depósito Juan</span>
+        <strong>$200</strong>
+    </div>
+
+    <div class="item">
+        <span>Compra material</span>
+        <strong>-$500</strong>
+    </div>
 </div>
 
-<div class="card">
-<h3 id="totales"></h3>
+<!-- BOTÓN FLOTANTE -->
+<div class="fab" onclick="location.href='Depositos.html'">
+    <i class="fas fa-plus"></i>
 </div>
 
+<!-- MENÚ -->
+<div class="nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i>Inicio</a>
+    <a href="Depositos.html"><i class="fas fa-dollar-sign"></i>Depósitos</a>
+    <a href="gastos.html"><i class="fas fa-wallet"></i>Gastos</a>
+    <a href="Proyecto.html"><i class="fas fa-chart-line"></i>Proyectos</a>
+    <a href="index2.html"><i class="fas fa-bars"></i>Más</a>
 </div>
 
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
-  authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita",
-  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
-  messagingSenderId: "836131757319",
-  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-const ADMIN_EMAIL = "interpolhtehuacan@gmail.com";
-
-window.login = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .catch(()=>alert("Error"));
-};
-
-onAuthStateChanged(auth, user=>{
-  if(user && user.email===ADMIN_EMAIL){
-    login.style.display="none";
-    contenido.style.display="block";
-  }
-});
-
-window.logout = ()=>signOut(auth);
-
-// FORMULARIO
-formulario.addEventListener("submit", async e=>{
-  e.preventDefault();
-
-  await addDoc(collection(db,"cooperaciones"),{
-    nombre:nombre.value,
-    efectivo:Number(efectivo.value)||0,
-    deposito:Number(deposito.value)||0
-  });
-
-  formulario.reset();
-});
-
-// RETIROS
-let totalRetiros = 0;
-
-window.mostrarRetiro = ()=>{
-  formRetiro.style.display = formRetiro.style.display==="none"?"block":"none";
-};
-
-window.guardarRetiro = async ()=>{
-  await addDoc(collection(db,"retiros"),{
-    monto:Number(montoRetiro.value)||0,
-    motivo:motivoRetiro.value,
-    fecha:new Date()
-  });
-
-  montoRetiro.value="";
-  motivoRetiro.value="";
-};
-
-// DATOS
-let datosGlobales=[];
-
-onSnapshot(collection(db,"cooperaciones"),snap=>{
-  datosGlobales=[];
-  snap.forEach(d=>datosGlobales.push(d.data()));
-  render();
-});
-
-onSnapshot(collection(db,"retiros"),snap=>{
-  totalRetiros=0;
-  snap.forEach(d=>totalRetiros+=d.data().monto||0);
-  render();
-});
-
-function render(){
-  tabla.innerHTML="";
-  let totalE=0,totalD=0;
-
-  datosGlobales.forEach(d=>{
-    const total=(d.efectivo||0)+(d.deposito||0);
-    tabla.innerHTML+=`
-    <tr>
-      <td>${d.nombre}</td>
-      <td>${d.efectivo}</td>
-      <td>${d.deposito}</td>
-      <td>${total}</td>
-    </tr>`;
-    totalE+=d.efectivo||0;
-    totalD+=d.deposito||0;
-  });
-
-  const caja=(totalE+totalD)-totalRetiros;
-
-  totales.innerHTML=`
-    Ingresos: ${totalE+totalD}<br>
-    Retiros: ${totalRetiros}<br>
-    <strong>Caja: ${caja}</strong>
-  `;
-}
-
-</script>
 </body>
 </html>
