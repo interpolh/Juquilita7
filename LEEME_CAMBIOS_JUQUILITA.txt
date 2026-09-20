@@ -1,0 +1,27 @@
+JUQUILITA - VERSIÓN MEJORADA
+
+CAMBIOS PRINCIPALES
+- 4 campos nuevos en Administración: Cooperación $170, Cooperación $120, Número de Talón y Cooperación X.
+- Los registros anteriores de Firebase siguen funcionando; los campos faltantes se interpretan como 0 o vacío.
+- Proyecto ahora muestra Meta, Total recaudado, Faltante, porcentaje, Efectivo, Depósitos y cooperaciones por tipo.
+- Diseño responsivo mejorado para celular, tablet y computadora.
+- Botones más grandes y legibles.
+- Cooperaciones exporta los campos nuevos a CSV y PDF.
+
+COOPERACIÓN X
+Para cambiar su nombre en el futuro, abre config.js y modifica SOLO:
+window.COOPERACION_X_NOMBRE = "Cooperación X";
+Ejemplo:
+window.COOPERACION_X_NOMBRE = "Cooperación Pintura";
+
+IMPORTANTE SOBRE TOTALES
+Para no duplicar dinero, la META usa TOTAL RECAUDADO = EFECTIVO + DEPÓSITO.
+Las columnas de Cooperación se muestran como clasificaciones/desglose y NO se suman nuevamente al total de la meta.
+
+PRUEBA ANTES DE PUBLICAR
+1. Haz respaldo de la versión actual.
+2. Sube todos los archivos de esta carpeta al sitio.
+3. Reemplaza los archivos existentes cuando corresponda.
+4. Publica/guarda cambios.
+5. En el navegador usa Ctrl+F5.
+6. Prueba primero un registro de ejemplo y edítalo.

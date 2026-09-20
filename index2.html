@@ -1,322 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<title>ADMIN - Cooperaciones</title>
-
-<link rel="manifest" href="manifest.json">
-
-<style>
-body {
-  font-family: Arial;
-  background: #eef2f7;
-  padding: 20px;
-}
-
-h2 { text-align: center; }
-
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-input {
-  padding: 8px;
-  margin: 5px;
-  width: 95%;
-}
-
-button {
-  padding: 8px;
-  margin: 5px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.guardar { background: #27ae60; color: white; }
-.cancelar { background: #e74c3c; color: white; }
-.editar { background: #3498db; color: white; }
-.eliminar { background: #c0392b; color: white; }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-th {
-  background: #2c3e50;
-  color: white;
-}
-
-td, th {
-  padding: 8px;
-  text-align: center;
-}
-
-tr:nth-child(even) {
-  background: #f2f2f2;
-}
-</style>
-</head>
-
-<body>
-
-<!-- 🔐 LOGIN -->
-<div id="login" class="card">
-  <h3>🔐 Acceso Administrador</h3>
-  <input type="email" id="email" placeholder="Correo">
-  <input type="password" id="password" placeholder="Contraseña">
-  <button onclick="login()">Entrar</button>
-</div>
-
-<!-- 🔒 CONTENIDO -->
-<div id="contenido" style="display:none;">
-
-<h2>Panel Administrador</h2>
-
-<button onclick="logout()">Cerrar sesión</button>
-
-<div class="card">
-<form id="formulario">
-  <input type="hidden" id="docId">
-
-  <input type="text" id="nombre" placeholder="Nombre" required>
-  <input type="number" id="cooperacion" placeholder="Cooperación">
-  <input type="number" id="efectivo" placeholder="Efectivo">
-  <input type="number" id="deposito" placeholder="Depósito">
-
-  <button type="submit" class="guardar">Guardar</button>
-  <button type="button" onclick="cancelarEdicion()" class="cancelar">Cancelar</button>
-</form>
-</div>
-
-<div class="card">
-<input type="text" id="buscador" placeholder="🔍 Buscar por nombre...">
-</div>
-
-<div class="card">
-<table>
-<thead>
-<tr>
-<th>Nombre</th>
-<th>Coop</th>
-<th>Efectivo</th>
-<th>Depósito</th>
-<th>Total</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody id="tabla"></tbody>
-</table>
-</div>
-
-<div class="card">
-<h3 id="totales"></h3>
-</div>
-
-</div>
-
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#173a5e"><title>ADMIN - Juquilita</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="juquilita.css"><script src="config.js"></script></head><body>
+<header class="header"><h1>Panel Administrador</h1><p>Cooperaciones · Colonia Juquilita Sección 7</p></header>
+<main class="container">
+<div id="login" class="card login-box"><h2 class="section-title">🔐 Acceso Administrador</h2><div class="field"><label for="email">Correo</label><input type="email" id="email" autocomplete="username" placeholder="Correo del administrador"></div><div class="field" style="margin-top:12px"><label for="password">Contraseña</label><input type="password" id="password" autocomplete="current-password" placeholder="Contraseña"></div><div class="actions" style="margin-top:12px"><button class="btn btn-primary" onclick="login()">🔓 Entrar</button></div></div>
+<div id="contenido" style="display:none">
+<div class="actions" style="justify-content:flex-end;margin-bottom:12px"><button class="btn btn-dark" onclick="logout()">🚪 Cerrar sesión</button></div>
+<div class="card"><h2 class="section-title">Registrar o editar cooperación</h2><p class="muted">Los cuatro campos nuevos pueden quedar en 0 o vacíos cuando no se utilicen.</p><form id="formulario"><input type="hidden" id="docId"><div class="form-grid">
+<div class="field full"><label for="nombre">Nombre *</label><input type="text" id="nombre" required placeholder="Nombre de la persona"></div>
+<div class="field"><label for="cooperacion">Cooperación</label><input type="number" step="0.01" id="cooperacion" placeholder="0.00"></div>
+<div class="field"><label for="cooperacion170">Cooperación $170.00</label><input type="number" step="0.01" id="cooperacion170" placeholder="0.00"></div>
+<div class="field"><label for="cooperacion120">Cooperación $120.00</label><input type="number" step="0.01" id="cooperacion120" placeholder="0.00"></div>
+<div class="field"><label id="labelCoopX" for="cooperacionX">Cooperación X</label><input type="number" step="0.01" id="cooperacionX" placeholder="0.00"></div>
+<div class="field"><label for="numeroTalon">Número de talón</label><input type="text" id="numeroTalon" placeholder="Ej. 125"></div>
+<div class="field"><label for="efectivo">Efectivo</label><input type="number" step="0.01" id="efectivo" placeholder="0.00"></div>
+<div class="field"><label for="deposito">Depósito</label><input type="number" step="0.01" id="deposito" placeholder="0.00"></div>
+</div><div class="actions" style="margin-top:14px"><button type="submit" class="btn btn-success">💾 Guardar</button><button type="button" onclick="cancelarEdicion()" class="btn btn-warning">↩ Cancelar</button></div></form></div>
+<div class="card"><label for="buscador">Buscar registro</label><input type="text" id="buscador" placeholder="🔍 Buscar por nombre o número de talón..."></div>
+<div class="card"><h2 class="section-title">Registros</h2><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Coop.</th><th>$170</th><th>$120</th><th id="thCoopX">Coop. X</th><th>Talón</th><th>Efectivo</th><th>Depósito</th><th>Total E+D</th><th>Acciones</th></tr></thead><tbody id="tabla"></tbody></table></div></div>
+<div class="card"><h3 id="totales" class="section-title"></h3></div></div></main><a href="index.html" class="home-float">🏠 Inicio</a>
 <script type="module">
-
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-
-import { 
-  getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query, where, getDocs 
-} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
-import { 
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut 
-} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBboR7L9QYBF0VMI6kd4EahImEDnIbiV-U",
-  authDomain: "cooperaciones-juquilita.firebaseapp.com",
-  projectId: "cooperaciones-juquilita",
-  storageBucket: "cooperaciones-juquilita.firebasestorage.app",
-  messagingSenderId: "836131757319",
-  appId: "1:836131757319:web:70f93a56ccf152062bf9a2"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-
-// 👑 SOLO ESTE CORREO PUEDE ENTRAR
-const ADMIN_EMAIL = "interpolhtehuacan@gmail.com"; // 🔥 CAMBIA ESTO
-
-// 🔐 LOGIN
-window.login = function() {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
-
-  signInWithEmailAndPassword(auth, email, pass)
-    .catch(() => alert("Datos incorrectos"));
-}
-
-// 👑 VALIDAR ADMIN
-onAuthStateChanged(auth, user => {
-
-  if (user && user.email === ADMIN_EMAIL) {
-
-    document.getElementById("login").style.display = "none";
-    document.getElementById("contenido").style.display = "block";
-
-  } else {
-
-    if (user) {
-      alert("No tienes acceso");
-      signOut(auth);
-    }
-
-    document.getElementById("login").style.display = "block";
-    document.getElementById("contenido").style.display = "none";
-  }
-
-});
-
-// 🚪 LOGOUT
-window.logout = function() {
-  signOut(auth);
-}
-
-// 📊 SISTEMA (TU CÓDIGO ORIGINAL)
-const formato = (n) => n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
-
-const tabla = document.getElementById("tabla");
-let datosGlobales = [];
-
-// GUARDAR / EDITAR
-document.getElementById("formulario").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const id = document.getElementById("docId").value;
-  const nombre = document.getElementById("nombre").value.trim();
-
-  if (!nombre) return alert("El nombre es obligatorio");
-
-  const q = query(collection(db, "cooperaciones"), where("nombre", "==", nombre));
-  const querySnapshot = await getDocs(q);
-
-  if (!querySnapshot.empty && !id) {
-    return alert("Ese nombre ya existe");
-  }
-
-  const datos = {
-    nombre,
-    cooperacion: Number(document.getElementById("cooperacion").value) || 0,
-    efectivo: Number(document.getElementById("efectivo").value) || 0,
-    deposito: Number(document.getElementById("deposito").value) || 0
-  };
-
-  if (id) {
-    await updateDoc(doc(db, "cooperaciones", id), datos);
-    alert("Actualizado");
-  } else {
-    await addDoc(collection(db, "cooperaciones"), datos);
-    alert("Guardado");
-  }
-
-  cancelarEdicion();
-});
-
-// CANCELAR
-window.cancelarEdicion = () => {
-  document.getElementById("formulario").reset();
-  document.getElementById("docId").value = "";
-};
-
-// MOSTRAR
-onSnapshot(collection(db, "cooperaciones"), (snapshot) => {
-  datosGlobales = [];
-
-  snapshot.forEach(docSnap => {
-    datosGlobales.push({
-      id: docSnap.id,
-      ...docSnap.data()
-    });
-  });
-
-  renderTabla(datosGlobales);
-});
-
-// TABLA
-function renderTabla(lista) {
-  tabla.innerHTML = "";
-
-  let totalC = 0, totalE = 0, totalD = 0;
-
-  lista.forEach(d => {
-    const total = (d.cooperacion || 0) + (d.efectivo || 0) + (d.deposito || 0);
-
-    tabla.innerHTML += `
-      <tr>
-        <td>${d.nombre}</td>
-        <td>${formato(d.cooperacion)}</td>
-        <td>${formato(d.efectivo)}</td>
-        <td>${formato(d.deposito)}</td>
-        <td><strong>${formato(total)}</strong></td>
-        <td>
-          <button class="editar" onclick="editar('${d.id}','${d.nombre}',${d.cooperacion},${d.efectivo},${d.deposito})">Editar</button>
-          <button class="eliminar" onclick="eliminar('${d.id}')">Eliminar</button>
-        </td>
-      </tr>
-    `;
-
-    totalC += d.cooperacion || 0;
-    totalE += d.efectivo || 0;
-    totalD += d.deposito || 0;
-  });
-
-  document.getElementById("totales").innerHTML = `
-    Total Cooperación: ${formato(totalC)} <br>
-    Total Efectivo: ${formato(totalE)} <br>
-    Total Depósito: ${formato(totalD)} <br>
-    <strong>Total General: ${formato(totalC + totalE + totalD)}</strong>
-  `;
-}
-
-// BUSCAR
-document.getElementById("buscador").addEventListener("keyup", (e) => {
-  const texto = e.target.value.toLowerCase();
-  const filtrados = datosGlobales.filter(d =>
-    d.nombre.toLowerCase().includes(texto)
-  );
-  renderTabla(filtrados);
-});
-
-// EDITAR
-window.editar = (id, nombre, coop, efec, dep) => {
-  document.getElementById("docId").value = id;
-  document.getElementById("nombre").value = nombre;
-  document.getElementById("cooperacion").value = coop;
-  document.getElementById("efectivo").value = efec;
-  document.getElementById("deposito").value = dep;
-};
-
-// ELIMINAR
-window.eliminar = async (id) => {
-  if (confirm("¿Eliminar registro?")) {
-    await deleteDoc(doc(db, "cooperaciones", id));
-  }
-};
-
-</script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-}
-</script>
-
-</body>
-</html>
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import {getFirestore,collection,addDoc,onSnapshot,doc,deleteDoc,updateDoc,query,where,getDocs} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+const app=initializeApp(window.JUQUILITA_FIREBASE_CONFIG), db=getFirestore(app), auth=getAuth(app); const ADMIN_EMAIL="interpolhtehuacan@gmail.com";
+const formato=n=>(Number(n)||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'}); const valor=id=>Number(document.getElementById(id).value)||0; let datosGlobales=[]; let filtroActual=''; const tabla=document.getElementById('tabla');
+document.getElementById('labelCoopX').textContent=window.COOPERACION_X_NOMBRE; document.getElementById('thCoopX').textContent=window.COOPERACION_X_NOMBRE;
+window.login=()=>signInWithEmailAndPassword(auth,document.getElementById('email').value,document.getElementById('password').value).catch(()=>alert('Datos incorrectos'));
+window.logout=()=>signOut(auth);
+onAuthStateChanged(auth,user=>{const ok=user&&user.email===ADMIN_EMAIL;if(user&&!ok){alert('No tienes acceso');signOut(auth)}document.getElementById('login').style.display=ok?'none':'block';document.getElementById('contenido').style.display=ok?'block':'none'});
+document.getElementById('formulario').addEventListener('submit',async e=>{e.preventDefault();const id=document.getElementById('docId').value,nombre=document.getElementById('nombre').value.trim();if(!nombre)return alert('El nombre es obligatorio');const q=query(collection(db,'cooperaciones'),where('nombre','==',nombre));const qs=await getDocs(q);if(!qs.empty&&!id)return alert('Ese nombre ya existe');const datos={nombre,cooperacion:valor('cooperacion'),cooperacion170:valor('cooperacion170'),cooperacion120:valor('cooperacion120'),cooperacionX:valor('cooperacionX'),numeroTalon:document.getElementById('numeroTalon').value.trim(),efectivo:valor('efectivo'),deposito:valor('deposito')};if(id){await updateDoc(doc(db,'cooperaciones',id),datos);alert('Registro actualizado')}else{await addDoc(collection(db,'cooperaciones'),datos);alert('Registro guardado')}cancelarEdicion()});
+window.cancelarEdicion=()=>{document.getElementById('formulario').reset();document.getElementById('docId').value=''};
+onSnapshot(collection(db,'cooperaciones'),snap=>{datosGlobales=[];snap.forEach(s=>datosGlobales.push({id:s.id,...s.data()}));aplicarFiltro()});
+function renderTabla(lista){tabla.innerHTML='';let c=0,c170=0,c120=0,cx=0,e=0,d=0;lista.forEach(x=>{const coop=Number(x.cooperacion)||0,a=Number(x.cooperacion170)||0,b=Number(x.cooperacion120)||0,z=Number(x.cooperacionX)||0,ef=Number(x.efectivo)||0,dep=Number(x.deposito)||0,total=ef+dep;c+=coop;c170+=a;c120+=b;cx+=z;e+=ef;d+=dep;const tr=document.createElement('tr');tr.innerHTML=`<td>${esc(x.nombre)}</td><td>${formato(coop)}</td><td>${formato(a)}</td><td>${formato(b)}</td><td>${formato(z)}</td><td>${esc(x.numeroTalon||'—')}</td><td>${formato(ef)}</td><td>${formato(dep)}</td><td><strong>${formato(total)}</strong></td><td><div class="table-actions"><button class="btn btn-primary" data-edit="${x.id}">Editar</button><button class="btn btn-danger" data-del="${x.id}">Eliminar</button></div></td>`;tabla.appendChild(tr)});tabla.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editar(b.dataset.edit));tabla.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>eliminar(b.dataset.del));document.getElementById('totales').innerHTML=`Cooperación: ${formato(c)}<br>Cooperación $170: ${formato(c170)}<br>Cooperación $120: ${formato(c120)}<br>${esc(window.COOPERACION_X_NOMBRE)}: ${formato(cx)}<br>Efectivo: ${formato(e)}<br>Depósito: ${formato(d)}<br><strong>Total recaudado (Efectivo + Depósito): ${formato(e+d)}</strong>`}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+window.editar=id=>{const x=datosGlobales.find(r=>r.id===id);if(!x)return;['nombre','cooperacion','cooperacion170','cooperacion120','cooperacionX','numeroTalon','efectivo','deposito'].forEach(k=>document.getElementById(k).value=x[k]??'');document.getElementById('docId').value=id;window.scrollTo({top:0,behavior:'smooth'})};
+window.eliminar=async id=>{if(confirm('¿Eliminar este registro?'))await deleteDoc(doc(db,'cooperaciones',id))};
+function normalizar(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
+function aplicarFiltro(){const t=normalizar(filtroActual);if(!t){renderTabla(datosGlobales);return}const filtrados=datosGlobales.filter(x=>normalizar(x.nombre).includes(t)||normalizar(x.numeroTalon).includes(t));renderTabla(filtrados)}
+document.getElementById('buscador').addEventListener('input',e=>{filtroActual=e.target.value;aplicarFiltro()});
+</script><script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script></body></html>

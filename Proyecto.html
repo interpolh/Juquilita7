@@ -1,63 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proyecto</title>
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#2c3e50">
-
-  <!-- Estilos para el botón flotante -->
-  <style>
-    /* Botón flotante de inicio */
-    .btn-flotante {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: #2c3e50;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      transition: transform 0.2s, background 0.3s;
-      z-index: 1000; /* Siempre encima del contenido */
-    }
-
-    /* Efecto hover */
-    .btn-flotante:hover {
-      background: #3498db;
-      transform: scale(1.1);
-    }
-  </style>
-</head>
-<body>
-
-<!-- Imágenes -->
-<img src="coti1.jpg" alt="Proyecto">
-<img src="coti2.jpg" alt="Proyecto">
-
-<!-- Botón flotante de inicio -->
-<button id="btnInicio" class="btn-flotante" title="Ir al inicio">🏠</button>
-
-<!-- Scripts -->
-<script>
-  // Registrar Service Worker
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js");
-  }
-
-  // Esperar a que el DOM cargue antes de añadir el evento
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('btnInicio').addEventListener('click', () => {
-      window.location.href = 'index.html'; // Página de inicio
-    });
-  });
-</script>
-
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#173a5e"><title>Proyecto - Juquilita</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="juquilita.css"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="config.js"></script></head><body>
+<header class="header"><h1>Proyecto</h1><p>Avance financiero y documentos de la obra</p></header><main class="container">
+<div class="grid-4"><div class="stat"><small>Meta a juntar</small><strong id="meta">$0.00</strong></div><div class="stat"><small>Total recaudado</small><strong id="reunido">$0.00</strong></div><div class="stat"><small>Faltante</small><strong id="faltante">$0.00</strong></div><div class="stat"><small>Avance</small><strong id="porcentaje">0%</strong></div></div>
+<div class="card" style="margin-top:16px"><h2 class="section-title">Desglose</h2><div class="grid-3"><div class="stat"><small>Cooperación</small><strong id="coop">$0.00</strong></div><div class="stat"><small>Efectivo</small><strong id="efectivo">$0.00</strong></div><div class="stat"><small>Depósitos</small><strong id="deposito">$0.00</strong></div><div class="stat"><small>Cooperación $170</small><strong id="c170">$0.00</strong></div><div class="stat"><small>Cooperación $120</small><strong id="c120">$0.00</strong></div><div class="stat"><small id="labelX">Cooperación X</small><strong id="cx">$0.00</strong></div></div><p class="muted" style="margin-bottom:0">El total recaudado para la meta se calcula como Efectivo + Depósito, evitando contar dos veces las cooperaciones registradas por tipo.</p></div>
+<div class="card"><h2 class="section-title">Gráfica de avance</h2><div class="progress" style="margin-bottom:18px"><div id="barra" class="progress-bar">0%</div></div><canvas id="grafica"></canvas><p id="actualizado" class="muted"></p></div>
+<div class="card media-card"><h2 class="section-title">Documentos / cotizaciones del proyecto</h2><img src="coti1.jpg" alt="Cotización del proyecto 1"><div style="height:14px"></div><img src="coti2.jpg" alt="Cotización del proyecto 2"></div>
+</main><a href="index.html" class="home-float">🏠 Inicio</a>
+<script type="module">import {initializeApp} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";import {getFirestore,collection,onSnapshot} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";const app=initializeApp(window.JUQUILITA_FIREBASE_CONFIG),db=getFirestore(app),meta=window.JUQUILITA_META,fmt=n=>(Number(n)||0).toLocaleString('es-MX',{style:'currency',currency:'MXN'}),n=v=>Number(v)||0;document.getElementById('meta').textContent=fmt(meta);document.getElementById('labelX').textContent=window.COOPERACION_X_NOMBRE;let chart;onSnapshot(collection(db,'cooperaciones'),snap=>{let c=0,c170=0,c120=0,cx=0,e=0,d=0;snap.forEach(s=>{const x=s.data();c+=n(x.cooperacion);c170+=n(x.cooperacion170);c120+=n(x.cooperacion120);cx+=n(x.cooperacionX);e+=n(x.efectivo);d+=n(x.deposito)});const total=e+d,falt=Math.max(meta-total,0),pct=meta?Math.min(total/meta*100,100):0;[['coop',c],['c170',c170],['c120',c120],['cx',cx],['efectivo',e],['deposito',d],['reunido',total],['faltante',falt]].forEach(([id,v])=>document.getElementById(id).textContent=fmt(v));document.getElementById('porcentaje').textContent=pct.toFixed(2)+'%';const barra=document.getElementById('barra');barra.style.width=pct+'%';barra.textContent=pct.toFixed(2)+'%';document.getElementById('actualizado').textContent='Actualizado: '+new Date().toLocaleString('es-MX');if(chart)chart.destroy();chart=new Chart(document.getElementById('grafica'),{type:'doughnut',data:{labels:['Reunido','Faltante'],datasets:[{data:[total,falt]}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}})},err=>{document.getElementById('actualizado').textContent='No fue posible cargar los datos de Firebase.';console.error(err)});</script><script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script></body></html>
